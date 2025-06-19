@@ -6,7 +6,7 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between">
                 {/* Brand */}
                 <div className="mb-8 md:mb-0">
-                    <h2 className="text-2xl font-bold text-pink-500 mb-2">🎬 BuyMe</h2>
+                    <h2 className="text-2xl font-bold text-pink-500 mb-2">CineWorld</h2>
                     <p className="text-gray-400 max-w-xs">
                         Your go-to site for the latest movies, deals, and tickets.
                     </p>
@@ -27,7 +27,7 @@ export default function Footer() {
                     <div>
                         <h3 className="text-white font-semibold mb-4">Support</h3>
                         <ul>
-                            <li className="mb-2 hover:text-pink-500 cursor-pointer">Booking</li>
+                            <li className="mb-2 hover:text-pink-500 cursor-pointer">Book Now</li>
                             <li className="mb-2 hover:text-pink-500 cursor-pointer">Login</li>
                             <li className="mb-2 hover:text-pink-500 cursor-pointer">Contact Us</li>
                             <li className="mb-2 hover:text-pink-500 cursor-pointer">FAQs</li>
@@ -57,7 +57,7 @@ export default function Footer() {
 
             {/* Bottom bar */}
             <div className="mt-8 border-t border-gray-700 pt-6 text-center text-gray-500 text-sm">
-                &copy; {new Date().getFullYear()} BuyMe. All rights reserved.
+                &copy; {new Date().getFullYear()} CineWorld. All rights reserved.
             </div>
         </footer>
     );

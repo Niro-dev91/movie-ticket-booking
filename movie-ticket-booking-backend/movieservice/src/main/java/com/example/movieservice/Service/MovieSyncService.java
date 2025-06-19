@@ -36,11 +36,11 @@ public class MovieSyncService {
         this.movieRepository = movieRepository;
     }
 
- /*   @PostConstruct
+    @PostConstruct
     public void runOnStartup() { // enable sync on startup // manually call at startup for test
         System.out.println("Running sync on startup...");
         dailySync();
-    } */
+    } 
 
     @Scheduled(cron = "0 0 1 * * ?") // Daily at 1 AM
     @Transactional

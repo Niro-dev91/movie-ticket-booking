@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FaPlay, FaInfoCircle, FaTicketAlt } from 'react-icons/fa';
 
 export default function MovieBannerSlider({ movies }) {
     const [current, setCurrent] = useState(0);
@@ -32,11 +33,18 @@ export default function MovieBannerSlider({ movies }) {
                     <div className="absolute bottom-20 left-10 text-white max-w-xl">
                         <h1 className="text-4xl font-bold drop-shadow">{movie.title}</h1>
                         <p className="mt-2 text-lg drop-shadow">{movie.tagline}</p>
-                        <a href={movie.bookNow || "#"}>
-                            <button className="mt-4 bg-red-600 px-5 py-2 rounded-lg text-sm hover:bg-red-700 transition">
-                                Book Now
-                            </button>
-                        </a>
+                        <div className="flex gap-4">
+                            <a href={movie.trailer || "#"}>
+                                <button className="mt-4 bg-red-600 px-5 py-2 rounded-lg text-sm hover:bg-red-700 transition w-40 flex items-center justify-center gap-2">
+                                    <FaPlay /> Trailer
+                                </button>
+                            </a>
+                            <a href={movie.bookNow || "#"}>
+                                <button className="mt-4 bg-green-600 px-5 py-2 rounded-lg text-sm hover:bg-green-600 transition w-40 flex items-center justify-center gap-2">
+                                    <FaTicketAlt /> Book Now
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </div>
             ))}

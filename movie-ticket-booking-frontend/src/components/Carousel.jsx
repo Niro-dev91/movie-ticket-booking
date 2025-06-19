@@ -71,6 +71,8 @@ export default function Carousel() {
             <div className="absolute inset-0 bg-black/70 -z-10 backdrop-blur-sm"></div>
             <h2
                 className="
+        mt-12
+        justify-center 
         flex
         items-center
         gap-4
@@ -91,6 +93,16 @@ export default function Carousel() {
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
                 Now Showing
+                <svg
+                    className="w-8 h-8 text-pink-500 animate-bounce"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
             </h2>
             {/* Carousel */}
             <div className="relative z-10 w-full max-w-screen-xl mx-auto py-12 px-4">
