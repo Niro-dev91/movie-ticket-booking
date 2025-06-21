@@ -4,6 +4,7 @@ import Carousel from "../components/Carousel";
 import MovieBannerSlider from "../components/MovieBannerSlider";
 import ComingSoon from '../components/ComingSoon';
 import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
 
 const movies = [
   {
@@ -31,6 +32,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
+      
       <div> {/* Prevent banner hiding under navbar */}
         <MovieBannerSlider movies={movies} />
         <Carousel />

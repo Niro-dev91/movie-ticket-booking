@@ -149,7 +149,8 @@ export default function Carousel() {
                                                 <FaInfoCircle /> View More
                                             </button>
                                         </a>
-                                        <a href={movie.bookNow}>
+                                        {/*<Link to={'/booking/${movie.id}'}>Book Now</Link>*/}
+                                        <a href={'/booking'}>
                                             <button className="flex items-center gap-2 bg-green-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm shadow-md">
                                                 <FaTicketAlt /> Book Now
                                             </button>

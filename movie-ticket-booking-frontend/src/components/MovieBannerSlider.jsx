@@ -39,7 +39,7 @@ export default function MovieBannerSlider({ movies }) {
                                     <FaPlay /> Trailer
                                 </button>
                             </a>
-                            <a href={movie.bookNow || "#"}>
+                            <a href={'/booking'|| "#"}>
                                 <button className="mt-4 bg-green-600 px-5 py-2 rounded-lg text-sm hover:bg-green-600 transition w-40 flex items-center justify-center gap-2">
                                     <FaTicketAlt /> Book Now
                                 </button>
