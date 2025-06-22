@@ -1,9 +1,10 @@
 package com.example.authenticationservice.Service;
 
 import com.example.authenticationservice.Repository.UserRepository;
+import com.example.authenticationservice.DTO.RegisterRequest;
 import com.example.authenticationservice.Entity.User;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +25,19 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-     public boolean existsByUsername(String username){
+    public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
-     }
+    }
 
-    public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public boolean register(RegisterRequest request) {
+        if (userRepository.existsByUsername(request.getUsername()))
+            return false;
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+        return true;
     }
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {

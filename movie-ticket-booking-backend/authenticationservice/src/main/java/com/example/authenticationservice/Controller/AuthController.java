@@ -42,24 +42,17 @@ public class AuthController {
             response.put("token", token);
             return ResponseEntity.ok(response);
         }
-       // throw new RuntimeException("Invalid credentials");
-       throw new InvalidCredentialsException("Invalid username or password");
+        // throw new RuntimeException("Invalid credentials");
+        throw new InvalidCredentialsException("Invalid username or password");
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        if (userService.existsByUsername(request.getUsername())) {
+        boolean success = userService.register(request);
+        if (!success) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
         }
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        // user.setPassword(passwordEncoder.encode(request.getPassword()));
-        userService.saveUser(user);
-
         return ResponseEntity.ok("Registration successful");
-
     }
 
     @GetMapping("/booking")

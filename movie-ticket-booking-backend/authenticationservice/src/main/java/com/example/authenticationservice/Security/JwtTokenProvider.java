@@ -28,7 +28,7 @@ public class JwtTokenProvider {
         secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username) { 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpiration);
 
