@@ -1,6 +1,9 @@
 package com.example.authenticationservice.Service;
 
 import com.example.authenticationservice.Repository.UserRepository;
+
+import jakarta.annotation.PostConstruct;
+
 import com.example.authenticationservice.DTO.RegisterRequest;
 import com.example.authenticationservice.Entity.User;
 
@@ -36,11 +39,23 @@ public class UserService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.getRoles().add("ROLE_USER");
         userRepository.save(user);
         return true;
     }
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    @PostConstruct
+    public void initAdminUser() {
+        if (!userRepository.existsByUsername("admin")) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.getRoles().add("ROLE_ADMIN");
+            userRepository.save(admin);
+        }
     }
 }

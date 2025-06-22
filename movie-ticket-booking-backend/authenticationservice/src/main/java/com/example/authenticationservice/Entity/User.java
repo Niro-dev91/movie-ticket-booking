@@ -1,5 +1,8 @@
 package com.example.authenticationservice.Entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +17,10 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> roles = new HashSet<>(); // e.g., ["ROLE_USER", "ROLE_ADMIN"]
 
     public Long getId() {
         return id;
@@ -37,6 +44,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 
 }

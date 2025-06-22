@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,15 +35,37 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
-        if ("user".equals(request.getUsername()) && "pass".equals(request.getPassword())) { // username & password hard
-                                                                                            // coded for now
-            String token = jwtTokenProvider.generateToken(request.getUsername());
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
-            return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request) {
+        /*
+         * if ("user".equals(request.getUsername()) &&
+         * "pass".equals(request.getPassword())) { // username & password hard
+         * // coded for now
+         * String token = jwtTokenProvider.generateToken(request.getUsername());
+         * Map<String, String> response = new HashMap<>();
+         * response.put("token", token);
+         * return ResponseEntity.ok(response);
+         * }
+         * // throw new RuntimeException("Invalid credentials");
+         * throw new InvalidCredentialsException("Invalid username or password");
+         */
+        // Find user by username
+        Optional<User> userOptional = userService.findByUsername(request.getUsername());
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Match encoded password
+            if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                // Generate JWT
+                String token = jwtTokenProvider.generateToken(user);
+                Map<String, Object> response = new HashMap<>();
+                response.put("token", token);
+                response.put("roles", user.getRoles());
+                return ResponseEntity.ok(response);
+            }
         }
-        // throw new RuntimeException("Invalid credentials");
+
+        // Invalid credentials
         throw new InvalidCredentialsException("Invalid username or password");
     }
 
@@ -59,5 +82,10 @@ public class AuthController {
     public ResponseEntity<String> getBooking(@AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("Logged in user: " + userDetails.getUsername());
         return ResponseEntity.ok("Booking data for " + userDetails.getUsername());
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String getAdminPage() {
+        return "Only admins can see this!";
     }
 }
