@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request) {
         /*
          * if ("user".equals(request.getUsername()) &&
          * "pass".equals(request.getPassword())) { // username & password hard
@@ -57,9 +57,10 @@ public class AuthController {
             // Match encoded password
             if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                 // Generate JWT
-                String token = jwtTokenProvider.generateToken(user.getUsername());
-                Map<String, String> response = new HashMap<>();
+                String token = jwtTokenProvider.generateToken(user);
+                Map<String, Object> response = new HashMap<>();
                 response.put("token", token);
+                response.put("roles", user.getRoles());
                 return ResponseEntity.ok(response);
             }
         }
@@ -81,5 +82,10 @@ public class AuthController {
     public ResponseEntity<String> getBooking(@AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("Logged in user: " + userDetails.getUsername());
         return ResponseEntity.ok("Booking data for " + userDetails.getUsername());
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String getAdminPage() {
+        return "Only admins can see this!";
     }
 }

@@ -3,36 +3,50 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
+import Admin from './pages/Admin';  // no file extension needed if it's .js or .jsx
 import Trailer from './trailer/TrailerPlayer';
 import Booking from './booking/Booking';
 import MovieList from './movies/MovieList';
+import Location from './location/Location';
+import Deal from './deal/Deal';
+import ProtectedRoute from './components/ProtectedRoute';
 
-// 🔒 ProtectedRoute logic
+/* 🔒 ProtectedRoute logic
 function ProtectedRoute({ children }) {
   const { token, loading } = useAuth();
   if (loading) return <p>Loading...</p>;
   return token ? children : <Navigate to="/login" replace />;
-}
+}*/
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public routes */}
+          {/* Public */}
           <Route path="/" element={<Home />} />
           <Route path="/trailer" element={<Trailer />} />
           <Route path="/movies" element={<MovieList />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* Protected route */}
+          <Route path="/location" element={<Location />} />
+          <Route path="/deal" element={<Deal />} />
+          {/* Protected */}
           <Route
-          //path="/booking/:id"
             path="/booking"
             element={
               <ProtectedRoute>
                 <Booking />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin only */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute roles={['ROLE_ADMIN']}>
+                <Admin />
               </ProtectedRoute>
             }
           />
