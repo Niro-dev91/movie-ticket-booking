@@ -32,6 +32,7 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(User user) {
+
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpiration);
 

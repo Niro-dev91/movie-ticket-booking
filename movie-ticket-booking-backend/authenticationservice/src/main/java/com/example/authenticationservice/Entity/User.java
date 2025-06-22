@@ -18,6 +18,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles = new HashSet<>(); // e.g., ["ROLE_USER", "ROLE_ADMIN"]
 
@@ -52,4 +53,5 @@ public class User {
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
+
 }

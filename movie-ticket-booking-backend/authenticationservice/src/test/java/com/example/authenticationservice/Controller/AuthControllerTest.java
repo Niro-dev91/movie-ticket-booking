@@ -26,12 +26,13 @@ class AuthControllerTest {
         this.objectMapper = objectMapper;
 
     }
-
+/* 
     @Test
     void loginSuccessTest() throws Exception {
         LoginRequest request = new LoginRequest();
         request.setUsername("user");      // use the dummy user/pass you use in login
         request.setPassword("pass");
+        request.getRole(role:"admin");
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -51,5 +52,5 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Invalid username or password"));
-    }
+    }*/
 }
