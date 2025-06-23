@@ -1,4 +1,4 @@
-package com.example.movieservice.Service;
+package com.example.upcomingmoviesservice.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +16,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.movieservice.Entity.Movie;
-import com.example.movieservice.Repository.MovieRepository;
+import com.example.upcomingmoviesservice.Entity.Movie;
+import com.example.upcomingmoviesservice.Repository.MovieRepository;
 
 import jakarta.annotation.PostConstruct;
 

@@ -11,7 +11,7 @@ export default function ComingSoon() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/movies/upcoming?page=0&size=20')
+        fetch('/api/upcomingmovies/upcoming?page=0&size=20')
             .then(res => res.json())
             .then(data => {
                 setMovies(data.content);

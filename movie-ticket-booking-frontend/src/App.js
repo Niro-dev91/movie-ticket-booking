@@ -3,13 +3,16 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
-import Admin from './pages/Admin';  // no file extension needed if it's .js or .jsx
+import Admin from './admin/Admin';  // no file extension needed if it's .js or .jsx
 import Trailer from './trailer/TrailerPlayer';
 import Booking from './booking/Booking';
 import MovieList from './movies/MovieList';
 import Location from './location/Location';
 import Deal from './deal/Deal';
 import ProtectedRoute from './components/ProtectedRoute';
+
+//Admin pages
+import AddMovie from "./admin/movie/AddMovie";
 
 /* 🔒 ProtectedRoute logic
 function ProtectedRoute({ children }) {
@@ -49,7 +52,9 @@ function App() {
                 <Admin />
               </ProtectedRoute>
             }
-          />
+          >
+          <Route path="movie/add" element={<AddMovie />} />
+          </Route>
         </Routes>
       </Router>
     </AuthProvider>
