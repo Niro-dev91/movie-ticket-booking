@@ -4,26 +4,30 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class MovieDTO {
-    
+
     private String title;
     private String overview;
     private String posterUrl;
+    private String backdropUrl;
     private LocalDate releaseDate;
     private String category;
     private String videoLink;
     private Long tmdbId;
     private Long rate;
     private String tagline;
-    private List<String> genres; 
+    private List<String> genres;
+    private Long Id;
 
-    // Constructors
-    public MovieDTO() {}
+    public MovieDTO() {
+    }
 
-    public MovieDTO(String title, String overview, String posterUrl, LocalDate releaseDate, String category,
-                    String videoLink, Long tmdbId, Long rate, String tagline, List<String> genres) {
+    public MovieDTO(String title, String overview, String posterUrl, String backdropUrl, LocalDate releaseDate,
+            String category,
+            String videoLink, Long tmdbId, Long rate, String tagline, List<String> genres) {
         this.title = title;
         this.overview = overview;
         this.posterUrl = posterUrl;
+        this.backdropUrl = backdropUrl;
         this.releaseDate = releaseDate;
         this.category = category;
         this.videoLink = videoLink;
@@ -33,7 +37,18 @@ public class MovieDTO {
         this.genres = genres;
     }
 
-    // Getters and Setters
+     public MovieDTO(Long Id,String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
+        this.Id = Id;
+        this.title = title;
+        this.tagline = tagline;
+        this.videoLink = videoLink;
+        this.backdropUrl = backdropUrl;
+        this.posterUrl   = posterUrl;
+    }
+
+    public Long getId() {
+        return Id;
+    }
 
     public String getTitle() {
         return title;
@@ -49,6 +64,14 @@ public class MovieDTO {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    public String getBackdropUrl() {
+        return backdropUrl;
+    }
+
+    public void setBackdropUrl(String backdropUrl) {
+        this.backdropUrl = backdropUrl;
     }
 
     public String getPosterUrl() {
@@ -114,7 +137,5 @@ public class MovieDTO {
     public void setGenres(List<String> genres) {
         this.genres = genres;
     }
-
-    
 
 }

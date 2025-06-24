@@ -14,7 +14,7 @@ public class Genre {
     private String name;
 
     public Genre() {
-        // Default constructor required by JPA
+       
     }
 
     public Genre(Integer id, String name) {
@@ -22,7 +22,7 @@ public class Genre {
         this.name = name;
     }
 
-    // Getters and setters
+   
 
     public Integer getId() {
         return id;

@@ -10,52 +10,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.movieservice.DTO.MovieDTO;
 import com.example.movieservice.Entity.Movie;
-import com.example.movieservice.Repository.MovieRepository;
 import com.example.movieservice.Service.GenreService;
 import com.example.movieservice.Service.MovieService;
 import com.example.movieservice.Service.TrailerService;
 
 @RestController
 @RequestMapping("/api/movies")
-@CrossOrigin(origins = "http://localhost:3000")  // adjust frontend URL if different
+@CrossOrigin(origins = "http://localhost:3000") // adjust frontend URL if different
 public class MovieController {
 
-    private final MovieRepository movieRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${tmdb.api.key}")
     private String apiKey;
 
-    @Autowired
-    private GenreService genreService;
+    private final GenreService genreService;
+    private final TrailerService trailerService;
+    private final MovieService movieService;
 
-    @Autowired
-    private TrailerService trailerService;
-
-    @Autowired
-    private MovieService movieService;
-
-    // Constructor injection only for repository (optional)
-    public MovieController(MovieRepository movieRepository) {
-        this.movieRepository = movieRepository;
+    public MovieController(GenreService genreService, TrailerService trailerService, MovieService movieService) {
+        this.genreService = genreService;
+        this.movieService = movieService;
+        this.trailerService = trailerService;
     }
 
-    // Search TMDB movies proxy endpoint
+    // Search TMDB movies endpoint
     @GetMapping("/search")
     public ResponseEntity<List<Map<String, Object>>> searchMovies(@RequestParam("query") String query) {
         String url = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey
-                + "&query=" + query + "&language=en-US";
+        // + "&query=" + query + "&language=en-US";
+                + "&query=" + query + "";
 
         try {
             ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
@@ -70,6 +59,7 @@ public class MovieController {
                 newMovie.put("overview", movie.get("overview"));
                 newMovie.put("releaseDate", movie.get("release_date"));
                 newMovie.put("posterUrl", "https://image.tmdb.org/t/p/w500" + movie.get("poster_path"));
+                newMovie.put("backdropUrl", "https://image.tmdb.org/t/p/w500" + movie.get("backdrop_path"));
 
                 List<Integer> genreIds = (List<Integer>) movie.get("genre_ids");
                 newMovie.put("genres", genreService.getGenreNames(genreIds));
@@ -84,8 +74,8 @@ public class MovieController {
 
                 // Fetch detailed info to get tagline
                 if (movieId != null) {
-                    String detailUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey
-                            + "&language=en-US";
+                    String detailUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey + "";
+                    // + "&language=en-US";
                     ResponseEntity<Map> detailResponse = restTemplate.getForEntity(detailUrl, Map.class);
                     if (detailResponse.getBody() != null) {
                         String tagline = (String) detailResponse.getBody().get("tagline");
@@ -106,9 +96,10 @@ public class MovieController {
         }
     }
 
-    // Save movie endpoint - expects JSON matching MovieDTO
+    // Save movie endpoint
     @PostMapping("/save")
     public ResponseEntity<?> addMovie(@RequestBody MovieDTO movieDTO) {
+      //  System.out.println("Incoming DTO: " + movieDTO);
         try {
             Movie savedMovie = movieService.saveMovie(movieDTO);
             return ResponseEntity.ok(savedMovie);
@@ -116,5 +107,13 @@ public class MovieController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save movie");
         }
+    }
+     @GetMapping("/toprated")
+    public List<MovieDTO> getFeaturedMovies() {
+        return movieService.getFeaturedMovies();
+    }
+     @GetMapping("/allmovies")
+    public List<MovieDTO> getAllMovies() {
+        return movieService.getAllMovies();
     }
 }

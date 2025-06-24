@@ -4,15 +4,19 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
-import { FaPlay, FaInfoCircle, FaTicketAlt } from 'react-icons/fa';
+import { FaPlay, FaInfoCircle } from 'react-icons/fa';
 
 export default function ComingSoon() {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/upcomingmovies/upcoming?page=0&size=20')
-            .then(res => res.json())
+        // 🔁 Call backend running on port 8081
+        fetch('http://localhost:8081/api/upcomingmovies/upcoming?page=0&size=20')
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch");
+                return res.json();
+            })
             .then(data => {
                 setMovies(data.content);
                 setLoading(false);
@@ -37,14 +41,9 @@ export default function ComingSoon() {
 
             {/* Heading */}
             <h2
-                className="
-    mt-12 mb-6
-    flex justify-center items-center gap-4
-    text-4xl font-semibold
-    bg-gradient-to-r from-purple-400 via-pink-500 to-red-500
-    bg-clip-text text-transparent drop-shadow-lg
-    animate-pulse select-none tracking-wide uppercase
-  "
+                className="mt-12 mb-6 flex justify-center items-center gap-4 text-4xl font-semibold
+                bg-gradient-to-r from-purple-400 via-pink-500 to-red-500
+                bg-clip-text text-transparent drop-shadow-lg animate-pulse select-none tracking-wide uppercase"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
                 Coming Soon
@@ -59,7 +58,6 @@ export default function ComingSoon() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
             </h2>
-
 
             {/* Swiper Section */}
             <div className="flex justify-center items-start px-4">
@@ -94,16 +92,20 @@ export default function ComingSoon() {
                                     </h3>
                                     <p className="text-gray-400 text-sm">{new Date(movie.releaseDate).toLocaleDateString()}</p>
                                     <div className="mt-auto flex gap-3">
-                                       <a href={movie.trailer} target="_blank" rel="noreferrer">
-                                            <button className="flex items-center gap-2 bg-red-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm shadow-md">
-                                                <FaPlay /> Trailer
-                                            </button>
-                                        </a>
-                                        <a href={movie.viewMore}>
-                                            <button className="flex items-center gap-2 bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm shadow-md">
-                                                <FaInfoCircle /> View
-                                            </button>
-                                        </a>
+                                        {movie.trailer && (
+                                            <a href={movie.trailer} target="_blank" rel="noreferrer">
+                                                <button className="flex items-center gap-2 bg-red-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm shadow-md">
+                                                    <FaPlay /> Trailer
+                                                </button>
+                                            </a>
+                                        )}
+                                        {movie.viewMore && (
+                                            <a href={movie.viewMore}>
+                                                <button className="flex items-center gap-2 bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm shadow-md">
+                                                    <FaInfoCircle /> View
+                                                </button>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             </div>

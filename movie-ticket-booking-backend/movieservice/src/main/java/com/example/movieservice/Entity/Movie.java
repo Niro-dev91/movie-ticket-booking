@@ -21,7 +21,9 @@ public class Movie {
     @Column(length = 5000)
     private String overview;
 
-    private String posterPath;
+    private String posterUrl;
+
+    private String backdropUrl;
 
     private LocalDate releaseDate;
 
@@ -34,18 +36,12 @@ public class Movie {
 
     private String tagline;
 
-
     @Column(nullable = false)
     private Instant lastUpdated;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-        name = "movie_genres",
-        joinColumns = @JoinColumn(name = "movie_id"),
-        inverseJoinColumns = @JoinColumn(name = "genre_id")
-    )
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "movie_genres", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genre> genres = new ArrayList<>();
-
 
     public Long getId() {
         return id;
@@ -68,11 +64,19 @@ public class Movie {
     }
 
     public String getPosterPath() {
-        return posterPath;
+        return posterUrl;
     }
 
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
+    public void setPosterPath(String posterUrl) {
+        this.posterUrl = posterUrl;
+    }
+
+    public String getBackdropUrl() {
+        return backdropUrl;
+    }
+
+    public void setBackdropUrl(String backdropUrl) {
+        this.backdropUrl = backdropUrl;
     }
 
     public LocalDate getReleaseDate() {
@@ -131,7 +135,7 @@ public class Movie {
         this.genres = genres;
     }
 
-    //Auto-set
+    // Auto-set
     @PrePersist
     @PreUpdate
     public void updateTimestamp() {

@@ -17,6 +17,7 @@ export default function AddMovie() {
     genres: [],
     trailer: "",
     tagline: "",
+    backdropUrl: "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -52,49 +53,55 @@ export default function AddMovie() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  e.preventDefault();
+  setLoading(true);
+  setMessage("");
 
-    try {
-      const data = new FormData();
-      data.append("title", formData.title);
-      data.append("description", formData.description);
-      data.append("releaseDate", formData.releaseDate);
-      data.append("tmdbId", formData.tmdbId || "");
-      data.append("rating", formData.rating || "");
-      data.append("voteCount", formData.voteCount || "");
-      data.append("trailer", formData.trailer || ""); 
-      data.append("tagline", formData.tagline || "");
-      data.append("genres", JSON.stringify(formData.genres));
+  try {
+    const payload = {
+      title: formData.title,
+      overview: formData.description,
+      releaseDate: formData.releaseDate,
+      tmdbId: formData.tmdbId,
+      rate: formData.rating,
+      voteCount: formData.voteCount,
+      videoLink: formData.trailer,
+      tagline: formData.tagline,
+      posterUrl: formData.posterUrl,
+      backdropUrl: formData.backdropUrl,
+      genres: formData.genres,
+      
+    };
 
-      if (mode === "manual" && formData.posterFile) {
-        data.append("posterFile", formData.posterFile);
-      } else {
-        data.append("posterUrl", formData.posterUrl);
-      }
+    await axios.post("http://localhost:8080/api/movies/save", payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      await axios.post("http://localhost:8080/api/movies/add", data);
-      setMessage("Movie added successfully!");
-      setFormData({
-        title: "",
-        description: "",
-        releaseDate: "",
-        posterUrl: "",
-        posterFile: null,
-        tmdbId: null,
-        rating: null,
-        voteCount: null,
-        genres: [],
-        tagline:"",
-      });
-    } catch (error) {
-      console.error(error);
-      setMessage("Failed to add movie.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setMessage("Movie added successfully!");
+    setFormData({
+      title: "",
+      description: "",
+      releaseDate: "",
+      posterUrl: "",
+      posterFile: null,
+      tmdbId: null,
+      rating: "",
+      voteCount: null,
+      genres: [],
+      tagline: "",
+      backdropUrl: "",
+      trailer: "",
+    });
+  } catch (error) {
+    console.error("Error saving movie:", error);
+    setMessage("Failed to add movie.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const searchMovies = async () => {
     if (!query.trim()) return;
@@ -126,6 +133,7 @@ export default function AddMovie() {
       genres: movie.genres || [],
       trailer: movie.video || "",
       tagline: movie.tagline || "",
+      backdropUrl: movie.backdropUrl || "",
     });
     setSearchResults([]);
     setQuery("");
@@ -145,12 +153,14 @@ export default function AddMovie() {
       genres: [],
       trailer: "",
       tagline:"",
+      backdropUrl:"",
     });
     setQuery("");
     setSearchResults([]);
     setMessage("");
   };
   return (
+
     <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Add New Movie</h2>
 
@@ -262,6 +272,17 @@ export default function AddMovie() {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
           />
+        ) : null} 
+
+        {mode === "search" || !formData.posterFile ? (
+          <input
+            type="text"
+            name="backdropUrl"
+            placeholder="Backdrop URL "
+            value={formData.backdropUrl}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+          />
         ) : null}
 
         {mode === "manual" && (
@@ -313,7 +334,7 @@ export default function AddMovie() {
               placeholder="Trailer URL"
               value={formData.trailer || ""}
               readOnly
-              className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+              className="w-full border rounded px-3 py-2"
             />
           ) : (
             <input
