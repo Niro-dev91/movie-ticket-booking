@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { useNavigate } from "react-router-dom";
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
-import { FaPlay, FaInfoCircle, FaTicketAlt } from 'react-icons/fa';
+import { FaPlay, FaInfoCircle } from 'react-icons/fa';
 
 export default function ComingSoon() {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('/api/movies/upcoming?page=0&size=20')
-            .then(res => res.json())
+        fetch('http://localhost:8081/api/upcomingmovies/upcoming?page=0&size=20')
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to fetch");
+                return res.json();
+            })
             .then(data => {
-                setMovies(data.content);
+                setMovies(data.content || []);
                 setLoading(false);
             })
             .catch(err => {
@@ -23,7 +29,7 @@ export default function ComingSoon() {
             });
     }, []);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className="text-white text-center mt-10">Loading...</div>;
 
     return (
         <div className="relative w-full min-h-screen overflow-hidden">
@@ -37,14 +43,9 @@ export default function ComingSoon() {
 
             {/* Heading */}
             <h2
-                className="
-    mt-12 mb-6
-    flex justify-center items-center gap-4
-    text-4xl font-semibold
-    bg-gradient-to-r from-purple-400 via-pink-500 to-red-500
-    bg-clip-text text-transparent drop-shadow-lg
-    animate-pulse select-none tracking-wide uppercase
-  "
+                className="mt-12 mb-6 flex justify-center items-center gap-4 text-4xl font-semibold
+                bg-gradient-to-r from-purple-400 via-pink-500 to-red-500
+                bg-clip-text text-transparent drop-shadow-lg animate-pulse select-none tracking-wide uppercase"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
                 Coming Soon
@@ -60,9 +61,8 @@ export default function ComingSoon() {
                 </svg>
             </h2>
 
-
             {/* Swiper Section */}
-            <div className="flex justify-center items-start px-4">
+            <div className="rounded-lg overflow-hidden shadow-lg bg-gray-900 px-5 py-3">
                 <Swiper
                     modules={[Navigation, Pagination, Autoplay]}
                     spaceBetween={20}
@@ -82,28 +82,29 @@ export default function ComingSoon() {
                 >
                     {movies.map((movie) => (
                         <SwiperSlide key={movie.id}>
-                            <div className="rounded-lg overflow-hidden shadow-lg bg-gray-900">
+                            <div className="rounded-lg overflow-hidden shadow-lg bg-gray-800">
                                 <img
                                     src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
                                     alt={movie.title || "No Title"}
                                     className="w-full h-72 object-cover"
                                 />
                                 <div className="p-5 flex flex-col gap-3">
-                                    <h3 className="text-white text-xl font-bold truncate" title={movie.title || "No Title"}>
+                                    <h3
+                                        className="text-white text-xl font-bold truncate"
+                                        title={movie.title || "No Title"}
+                                    >
                                         {movie.title || "No Title"}
                                     </h3>
-                                    <p className="text-gray-400 text-sm">{new Date(movie.releaseDate).toLocaleDateString()}</p>
+                                    <p className="text-gray-400 text-sm">
+                                        {new Date(movie.releaseDate).toLocaleDateString()}
+                                    </p>
                                     <div className="mt-auto flex gap-3">
-                                       <a href={movie.trailer} target="_blank" rel="noreferrer">
-                                            <button className="flex items-center gap-2 bg-red-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm shadow-md">
-                                                <FaPlay /> Trailer
-                                            </button>
-                                        </a>
-                                        <a href={movie.viewMore}>
-                                            <button className="flex items-center gap-2 bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm shadow-md">
-                                                <FaInfoCircle /> View
-                                            </button>
-                                        </a>
+                                        <button
+                                            onClick={() => navigate(`/movies/${movie.tmdbId}`)}
+                                            className="flex items-center gap-2 bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm shadow-md"
+                                        >
+                                            <FaInfoCircle /> View More
+                                        </button>
                                     </div>
                                 </div>
                             </div>

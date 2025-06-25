@@ -15,9 +15,10 @@ export default function Navbar() {
   };
 
   return (
-    //  <nav className="fixed top-0 left-0 w-full z-50 px-3 py-4 bg-transparent text-white">// removed transparent for now
-
-    <nav className="fixed top-0 left-0 w-full z-50 px-3 py-4 bg-black bg-opacity-80 text-white">
+      <nav className="fixed top-0 left-0 w-full z-50 px-3 py-4 bg-black bg-opacity-80 text-white">
+    {/*   // removed transparent for now
+<nav className="fixed top-0 left-0 w-full z-50 px-3 py-4 bg-transparent text-white">
+  //  */}
 
       <div className="flex justify-between items-center w-full">
         {/* Left side */}

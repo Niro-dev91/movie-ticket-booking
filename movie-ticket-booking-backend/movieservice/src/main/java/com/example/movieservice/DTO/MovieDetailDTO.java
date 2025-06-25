@@ -1,50 +1,37 @@
-package com.example.movieservice.Entity;
+package com.example.movieservice.DTO;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
+public class MovieDetailDTO {
 
-@Entity
-@Table(name = "movies")
-public class Movie {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
     private String title;
-
-    @Column(length = 5000)
     private String overview;
-
     private String posterUrl;
-
     private String backdropUrl;
-
     private LocalDate releaseDate;
-
-    @Column(name = "video_link")
+    private String category;
     private String videoLink;
-
     private Long tmdbId;
-
     private Long rate;
-
     private String tagline;
+    private List<String> genres;
+    private Long Id;
 
-    @Column(nullable = false)
-    private Instant lastUpdated;
+    public MovieDetailDTO() {
+    }
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "movie_genres", joinColumns = @JoinColumn(name = "movie_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    private List<Genre> genres = new ArrayList<>();
+      public MovieDetailDTO(Long tmdbId,String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
+        this.tmdbId = tmdbId;
+        this.title = title;
+        this.tagline = tagline;
+        this.videoLink = videoLink;
+        this.backdropUrl = backdropUrl;
+        this.posterUrl   = posterUrl;
+    }
 
     public Long getId() {
-        return id;
+        return Id;
     }
 
     public String getTitle() {
@@ -63,20 +50,20 @@ public class Movie {
         this.overview = overview;
     }
 
-    public String getPosterPath() {
-        return posterUrl;
-    }
-
-    public void setPosterPath(String posterUrl) {
-        this.posterUrl = posterUrl;
-    }
-
     public String getBackdropUrl() {
         return backdropUrl;
     }
 
     public void setBackdropUrl(String backdropUrl) {
         this.backdropUrl = backdropUrl;
+    }
+
+    public String getPosterUrl() {
+        return posterUrl;
+    }
+
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
     }
 
     public LocalDate getReleaseDate() {
@@ -87,12 +74,20 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public Instant getLastUpdated() {
-        return lastUpdated;
+    public String getCategory() {
+        return category;
     }
 
-    public void setLastUpdated(Instant now) {
-        this.lastUpdated = now;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getVideoLink() {
+        return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
     }
 
     public Long getTmdbId() {
@@ -111,14 +106,6 @@ public class Movie {
         this.rate = rate;
     }
 
-    public String getVideoLink() {
-        return videoLink;
-    }
-
-    public void setVideoLink(String videoLink) {
-        this.videoLink = videoLink;
-    }
-
     public String getTagline() {
         return tagline;
     }
@@ -127,19 +114,13 @@ public class Movie {
         this.tagline = tagline;
     }
 
-    public List<Genre> getGenres() {
+    public List<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(List<String> genres) {
         this.genres = genres;
     }
 
-    // Auto-set
-    @PrePersist
-    @PreUpdate
-    public void updateTimestamp() {
-        this.lastUpdated = Instant.now();
-    }
-
 }
+

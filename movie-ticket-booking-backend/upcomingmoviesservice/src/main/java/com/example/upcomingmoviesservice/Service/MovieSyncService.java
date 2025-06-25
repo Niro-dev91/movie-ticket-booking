@@ -1,4 +1,4 @@
-package com.example.movieservice.Service;
+package com.example.upcomingmoviesservice.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,15 +9,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.movieservice.Entity.Movie;
-import com.example.movieservice.Repository.MovieRepository;
+import com.example.upcomingmoviesservice.Entity.Movie;
+import com.example.upcomingmoviesservice.Repository.MovieRepository;
 
 import jakarta.annotation.PostConstruct;
 
@@ -40,7 +38,7 @@ public class MovieSyncService {
     public void runOnStartup() { // enable sync on startup // manually call at startup for test
         System.out.println("Running sync on startup...");
         dailySync();
-    } 
+    }
 
     @Scheduled(cron = "0 0 1 * * ?") // Daily at 1 AM
     @Transactional
@@ -63,7 +61,7 @@ public class MovieSyncService {
         int page = 1;
         boolean hasMorePages = true;
 
-        System.out.println("Syncing category: " + category);
+        // System.out.println("Syncing category: " + category);
 
         while (hasMorePages) {
             String url = TMDB_API_URL + category + "?api_key=" + apiKey + "&language=en-US&page=" + page;
