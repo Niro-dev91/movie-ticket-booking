@@ -3,6 +3,7 @@ package com.example.movieservice.Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class TrailerService {
 
     public String getTrailer(Long tmdbId) {
         String url = "https://api.themoviedb.org/3/movie/" + tmdbId + "/videos?api_key=" + apiKey + "&language=en-US";
-
+        // System.out.println("--------------------" + url);
         try {
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
@@ -34,12 +35,14 @@ public class TrailerService {
                     }
                 }
             }
+        } catch (HttpClientErrorException.NotFound e) {
+            // 404 Not Found
+            System.out.println("No videos found for movie ID " + tmdbId);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // If no trailer found
-        return null;
+        return null; // No trailer found or error occurred
     }
+
 }

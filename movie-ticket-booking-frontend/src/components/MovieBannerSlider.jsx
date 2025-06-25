@@ -49,7 +49,7 @@ export default function MovieBannerSlider() {
                     
                     <div className="absolute bottom-20 left-10 text-white max-w-xl">
                         <h1 className="text-4xl font-bold drop-shadow">{movie.title}</h1>
-                        <p className="mt-2 text-lg drop-shadow">{movie.tagline}</p>
+                        <p className="italic text-gray-300 mb-2">"{movie.tagline}"</p>
                         <div className="flex gap-4">
                             <a href={movie.videoLink || "#"}>
                                 <button className="mt-4 bg-red-600 px-5 py-2 rounded-lg text-sm hover:bg-red-700 transition w-40 flex items-center justify-center gap-2">

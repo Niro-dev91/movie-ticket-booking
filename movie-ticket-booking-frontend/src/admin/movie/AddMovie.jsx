@@ -107,6 +107,7 @@ export default function AddMovie() {
     if (!query.trim()) return;
     setLoading(true);
     try {
+      
       const res = await axios.get("http://localhost:8080/api/movies/search", {
         params: { query },
       });

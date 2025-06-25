@@ -3,7 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
-import Admin from './admin/Admin';  // no file extension needed if it's .js or .jsx
+import ViewMore from './pages/ViewMore';
+import Admin from './admin/Admin';
 import Trailer from './trailer/TrailerPlayer';
 import Booking from './booking/Booking';
 import MovieList from './movies/MovieList';
@@ -34,6 +35,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/location" element={<Location />} />
           <Route path="/deal" element={<Deal />} />
+          <Route path="/movies/:movieId" element={<ViewMore />} />
           {/* Protected */}
           <Route
             path="/booking"
@@ -53,7 +55,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-          <Route path="movie/add" element={<AddMovie />} />
+            <Route path="movie/add" element={<AddMovie />} />
           </Route>
         </Routes>
       </Router>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { useNavigate } from "react-router-dom";
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -10,6 +12,7 @@ import { FaPlay, FaInfoCircle, FaTicketAlt } from 'react-icons/fa';
 
 export default function Carousel() {
     const [movies, setMovies] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch('http://localhost:8080/api/movies/allmovies')
@@ -56,23 +59,27 @@ export default function Carousel() {
                         <SwiperSlide key={idx} className="rounded-xl overflow-hidden">
                             <div className="relative group">
                                 <img
-                                    src={movie.imageUrl || movie.posterUrl}
+                                    src={movie.imageUrl || movie.backdropUrl}
                                     alt={movie.title}
-                                    className="w-full h-[500px] object-cover rounded-xl"
+                                    className="w-full h-[500px] object-contain rounded-xl"
                                 />
                                 <div className="absolute bottom-6 left-6 text-white">
                                     <h2 className="text-xl font-bold drop-shadow">{movie.title}</h2>
+                                    <p className="italic text-gray-300 mb-2">{movie.tagline}</p>
                                     <div className="flex flex-wrap gap-3 mt-2">
                                         <a href={movie.videoLink} target="_blank" rel="noreferrer">
                                             <button className="flex items-center gap-2 bg-red-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm shadow-md">
                                                 <FaPlay /> Trailer
                                             </button>
                                         </a>
-                                        <a href={movie.viewMore || "#"}>
-                                            <button className="flex items-center gap-2 bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm shadow-md">
-                                                <FaInfoCircle /> View More
-                                            </button>
-                                        </a>
+                                        <button
+                                            onClick={() => navigate(`/movies/${movie.tmdbId}`)}
+
+                                            className="flex items-center gap-2 bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm shadow-md"
+                                        >
+                                            <FaInfoCircle /> View More
+                                        </button>
+
                                         <a href={movie.bookNow || "/booking"}>
                                             <button className="flex items-center gap-2 bg-green-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm shadow-md">
                                                 <FaTicketAlt /> Book Now
@@ -87,4 +94,7 @@ export default function Carousel() {
             </div>
         </div>
     );
+}
+function handleViewMore(movieId) {
+    window.location.href = '/movies/${movieId}';
 }

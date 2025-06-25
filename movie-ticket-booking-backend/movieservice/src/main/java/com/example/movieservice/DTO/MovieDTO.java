@@ -37,7 +37,7 @@ public class MovieDTO {
         this.genres = genres;
     }
 
-     public MovieDTO(Long Id,String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
+      public MovieDTO(Long Id,String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
         this.Id = Id;
         this.title = title;
         this.tagline = tagline;
