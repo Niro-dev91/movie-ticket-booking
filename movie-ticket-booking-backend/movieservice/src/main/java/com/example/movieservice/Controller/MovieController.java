@@ -2,17 +2,16 @@ package com.example.movieservice.Controller;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.movieservice.DTO.MovieDTO;
 import com.example.movieservice.DTO.MovieDetailDTO;
@@ -20,6 +19,8 @@ import com.example.movieservice.Entity.Movie;
 import com.example.movieservice.Service.GenreService;
 import com.example.movieservice.Service.MovieService;
 import com.example.movieservice.Service.TrailerService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -37,8 +38,8 @@ public class MovieController {
 
     public MovieController(GenreService genreService, TrailerService trailerService, MovieService movieService) {
         this.genreService = genreService;
-        this.movieService = movieService;
         this.trailerService = trailerService;
+        this.movieService = movieService;
     }
 
     // Search TMDB movies endpoint
@@ -47,8 +48,6 @@ public class MovieController {
         String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         String url = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey + "&query=" + encodedQuery
                 + "&language=en-US";
-
-        System.out.println(url);
 
         try {
             ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
@@ -83,7 +82,7 @@ public class MovieController {
 
                 // Fetch detailed info to get tagline
                 if (movieId != null) {
-                    String detailUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey + "";
+                    String detailUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey;
                     // + "&language=en-US";
                     ResponseEntity<Map> detailResponse = restTemplate.getForEntity(detailUrl, Map.class);
                     if (detailResponse.getBody() != null) {
@@ -106,15 +105,49 @@ public class MovieController {
     }
 
     // Save movie endpoint
-    @PostMapping("/save")
-    public ResponseEntity<?> addMovie(@RequestBody MovieDTO movieDTO) {
-        
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addMovie(
+            @RequestPart("title") String title,
+            @RequestPart("overview") String overview,
+            @RequestPart("releaseDate") String releaseDateStr, 
+            @RequestPart(value = "tmdbId", required = false) String tmdbIdStr,
+            @RequestPart(value = "rate", required = false) String rateStr,
+            @RequestPart(value = "videoLink", required = false) String videoLink,
+            @RequestPart(value = "tagline", required = false) String tagline,
+            @RequestPart("genres") String genresJson,
+            @RequestPart(value = "posterFile", required = false) MultipartFile posterFile,
+            @RequestPart(value = "posterUrl", required = false) String posterUrl,
+            @RequestPart(value = "backdropFile", required = false) MultipartFile backdropFile,
+            @RequestPart(value = "backdropUrl", required = false) String backdropUrl
+    ) {
         try {
-            Movie savedMovie = movieService.saveMovie(movieDTO);
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<String> genres = objectMapper.readValue(genresJson, new TypeReference<List<String>>() {});
+
+            LocalDate releaseDate = LocalDate.parse(releaseDateStr);
+
+            Long tmdbId = (tmdbIdStr != null && !tmdbIdStr.isBlank()) ? Long.parseLong(tmdbIdStr) : null;
+            Double rate = (rateStr != null && !rateStr.isBlank()) ? Double.parseDouble(rateStr) : null;
+
+            MovieDTO movieDTO = new MovieDTO();
+            movieDTO.setTitle(title);
+            movieDTO.setOverview(overview);
+            movieDTO.setReleaseDate(releaseDate);
+            movieDTO.setTmdbId(tmdbId);
+            movieDTO.setRate(rate);
+            movieDTO.setVideoLink(videoLink);
+            movieDTO.setTagline(tagline);
+            movieDTO.setGenres(genres);
+            movieDTO.setPosterUrl(posterUrl);
+            movieDTO.setBackdropUrl(backdropUrl);
+
+            Movie savedMovie = movieService.saveMovie(movieDTO, posterFile, backdropFile, posterUrl, backdropUrl);
             return ResponseEntity.ok(savedMovie);
+
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save movie");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to save movie: " + e.getMessage());
         }
     }
 
@@ -128,7 +161,7 @@ public class MovieController {
         return movieService.getAllMovies();
     }
 
-    @GetMapping("/movie/{id}") //movie detalis
+    @GetMapping("/movie/{id}")//movie detalis
     public String getMovie(@PathVariable String id) {
         return movieService.getMovieDetails(id);
     }

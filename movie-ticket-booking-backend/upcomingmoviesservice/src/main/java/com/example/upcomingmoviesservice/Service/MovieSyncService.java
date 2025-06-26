@@ -66,7 +66,7 @@ public class MovieSyncService {
         while (hasMorePages) {
             String url = TMDB_API_URL + category + "?api_key=" + apiKey + "&language=en-US&page=" + page;
 
-            // System.out.println("Calling TMDB URL: " + url);
+             System.out.println("Calling TMDB URL: " + url);
             try {
                 ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
                 Map<String, Object> body = response.getBody();
@@ -120,9 +120,9 @@ public class MovieSyncService {
         // releaseDate);
 
         // Define filtering logic
-        LocalDate today = LocalDate.now(); // e.g., June 19
-        LocalDate startDate = today.minusMonths(2); // April 19
-        LocalDate endDate = today.plusMonths(2); // August 19
+        LocalDate today = LocalDate.now(); // e.g., April 19
+        LocalDate startDate = today; // April 19
+        LocalDate endDate = today.plusMonths(4); // August 19
 
         // System.out.println("Skipping movie: " + title + " | Release Date: " +
         // releaseDate);

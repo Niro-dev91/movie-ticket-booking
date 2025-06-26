@@ -18,6 +18,7 @@ export default function AddMovie() {
     trailer: "",
     tagline: "",
     backdropUrl: "",
+    backdropFile: null,
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -41,7 +42,7 @@ export default function AddMovie() {
     });
   };
 
-  const handleFileChange = (e) => {
+  const handlePosterFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setFormData(prev => ({
@@ -51,63 +52,68 @@ export default function AddMovie() {
       }));
     }
   };
+  const handleBackdropFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        backdropFile: file,
+        backdropUrl: URL.createObjectURL(file),
+      }));
+    }
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage("");
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
-  try {
-    const payload = {
-      title: formData.title,
-      overview: formData.description,
-      releaseDate: formData.releaseDate,
-      tmdbId: formData.tmdbId,
-      rate: formData.rating,
-      voteCount: formData.voteCount,
-      videoLink: formData.trailer,
-      tagline: formData.tagline,
-      posterUrl: formData.posterUrl,
-      backdropUrl: formData.backdropUrl,
-      genres: formData.genres,
+    try {
+      const data = new FormData();
+
+      data.append("title", formData.title);
+      data.append("overview", formData.description); 
+      data.append("releaseDate", formData.releaseDate); 
+      data.append("tmdbId", formData.tmdbId || "");
+      data.append("rate", formData.rating || "");
+      data.append("videoLink", formData.trailer || "");
+      data.append("tagline", formData.tagline || "");
+      data.append("genres", JSON.stringify(formData.genres));
+
+      if (formData.posterFile) {
+        data.append("posterFile", formData.posterFile);
+      } else {
+        data.append("posterUrl", formData.posterUrl || "");
+      }
+
+      if (formData.backdropFile) {
+        data.append("backdropFile", formData.backdropFile);
+      } else {
+        data.append("backdropUrl", formData.backdropUrl || "");
+      }
+
+      await axios.post("http://localhost:8080/api/movies/save", data);
+
+
+      setMessage("Movie added successfully!");
+      setTimeout(() => {
+        resetFormData();
+      }, 6000);
       
-    };
-
-    await axios.post("http://localhost:8080/api/movies/save", payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    setMessage("Movie added successfully!");
-    setFormData({
-      title: "",
-      description: "",
-      releaseDate: "",
-      posterUrl: "",
-      posterFile: null,
-      tmdbId: null,
-      rating: "",
-      voteCount: null,
-      genres: [],
-      tagline: "",
-      backdropUrl: "",
-      trailer: "",
-    });
-  } catch (error) {
-    console.error("Error saving movie:", error);
-    setMessage("Failed to add movie.");
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (error) {
+      console.error("Error saving movie:", error);
+      setMessage("Failed to add movie.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   const searchMovies = async () => {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      
+
       const res = await axios.get("http://localhost:8080/api/movies/search", {
         params: { query },
       });
@@ -153,8 +159,9 @@ export default function AddMovie() {
       voteCount: null,
       genres: [],
       trailer: "",
-      tagline:"",
-      backdropUrl:"",
+      tagline: "",
+      backdropUrl: "",
+      backdropFile: null,
     });
     setQuery("");
     setSearchResults([]);
@@ -264,7 +271,7 @@ export default function AddMovie() {
           className="w-full border rounded px-3 py-2"
         />
 
-        {mode === "search" || !formData.posterFile ? (
+        {mode === "search" && (
           <input
             type="text"
             name="posterUrl"
@@ -273,9 +280,14 @@ export default function AddMovie() {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
           />
-        ) : null} 
 
-        {mode === "search" || !formData.posterFile ? (
+        )
+
+        }
+        {formData.posterUrl && (
+          <img src={formData.posterUrl} alt="poster" className="w-32 rounded shadow mt-2" />
+        )}
+        {mode === "search" && (
           <input
             type="text"
             name="backdropUrl"
@@ -284,18 +296,29 @@ export default function AddMovie() {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
           />
-        ) : null}
-
+        )}
+        {formData.backdropUrl && (
+          <img src={formData.backdropUrl} alt="backdrop" className="w-32 rounded shadow mt-2" />
+        )}
         {mode === "manual" && (
           <div>
             <label className="block mb-1 font-semibold">Upload Poster Image</label>
-            <input type="file" accept="image/*" onChange={handleFileChange} />
+            <input type="file" accept="image/*" onChange={handlePosterFileChange} />
+
+            {formData.posterUrl && (
+              <img src={formData.posterUrl} alt="poster preview" className="w-32 rounded shadow mt-2" />
+            )}
+
+            <label className="block mt-4 mb-1 font-semibold">Upload Backdrop Image</label>
+            <input type="file" accept="image/*" onChange={handleBackdropFileChange} />
+
+            {formData.backdropUrl && (
+              <img src={formData.backdropUrl} alt="backdrop preview" className="w-64 rounded shadow mt-2" />
+            )}
           </div>
         )}
 
-        {formData.posterUrl && (
-          <img src={formData.posterUrl} alt="poster" className="w-32 rounded shadow mt-2" />
-        )}
+
 
         <div className="mb-4">
           <label className="block mb-1 font-semibold">Genres</label>
@@ -319,36 +342,36 @@ export default function AddMovie() {
             <p className="mb-4" >{formData.genres.length > 0 ? formData.genres.join(", ") : "No genres selected"}</p>
           )}
           <div className="mb-4">
-          <input
-            type="text"
-            name="rating"
-            placeholder="Rating (e.g., 7.5)"
-            value={formData.rating || ""}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"></input>
-            </div>
-            <div className="mb-4">
-          {mode === "search" ? (
             <input
               type="text"
-              name="trailer"
-              placeholder="Trailer URL"
-              value={formData.trailer || ""}
-              readOnly
-              className="w-full border rounded px-3 py-2"
-            />
-          ) : (
-            <input
-              type="text"
-              name="trailer"
-              placeholder="Trailer URL"
-              value={formData.trailer || ""}
+              name="rating"
+              placeholder="Rating (e.g., 7.5)"
+              value={formData.rating || ""}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
-          )}
+              className="w-full border rounded px-3 py-2"></input>
+          </div>
+          <div className="mb-4">
+            {mode === "search" ? (
+              <input
+                type="text"
+                name="trailer"
+                placeholder="Trailer URL"
+                value={formData.trailer || ""}
+                readOnly
+                className="w-full border rounded px-3 py-2"
+              />
+            ) : (
+              <input
+                type="text"
+                name="trailer"
+                placeholder="Trailer URL"
+                value={formData.trailer || ""}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              />
+            )}
+          </div>
         </div>
-</div>
         <button
           type="submit"
           disabled={loading}

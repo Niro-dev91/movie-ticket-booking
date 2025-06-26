@@ -32,7 +32,7 @@ public class Movie {
 
     private Long tmdbId;
 
-    private Long rate;
+    private Double rate;
 
     private String tagline;
 
@@ -103,11 +103,11 @@ public class Movie {
         this.tmdbId = tmdbId;
     }
 
-    public Long getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public void setRate(Long rate) {
+    public void setRate(Double rate) {
         this.rate = rate;
     }
 
