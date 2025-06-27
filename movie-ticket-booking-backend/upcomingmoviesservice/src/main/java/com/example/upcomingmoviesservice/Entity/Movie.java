@@ -27,6 +27,9 @@ public class Movie {
     private String category;
 
     @Column(nullable = false)
+    private String language;
+
+    @Column(nullable = false)
     private Instant lastUpdated;
 
     public String getPosterPath() {
@@ -45,9 +48,10 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public String getTitle(){
+    public String getTitle() {
         return title;
     }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -64,13 +68,24 @@ public class Movie {
         this.category = category;
     }
 
-    
     public void setLastUpdated(Instant now) {
         this.lastUpdated = now;
     }
 
     public void setId(Long movieId) {
         this.id = movieId;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
 }

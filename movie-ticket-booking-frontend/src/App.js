@@ -15,7 +15,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 //Admin pages
 import AddMovie from "./admin/movie/AddMovie";
 
-/* 🔒 ProtectedRoute logic
+/* ProtectedRoute logic
 function ProtectedRoute({ children }) {
   const { token, loading } = useAuth();
   if (loading) return <p>Loading...</p>;

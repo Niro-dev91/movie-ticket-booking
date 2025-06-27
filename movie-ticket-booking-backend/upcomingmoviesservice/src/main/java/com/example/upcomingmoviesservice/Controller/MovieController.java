@@ -2,6 +2,7 @@ package com.example.upcomingmoviesservice.Controller;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,6 +30,9 @@ public class MovieController {
     private final MovieRepository movieRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    // Allowed languages to filter, you can make this configurable
+    private static final List<String> languageList = List.of("en", "si", "en-US", "si-LK","hi","ta","ja","ko");
+
     @Value("${tmdb.api.key}")
     private String apiKey;
 
@@ -42,15 +46,27 @@ public class MovieController {
     public MoviePageResponse getMoviesByCategory(
             @PathVariable String category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(defaultValue = "en") String languages) {
 
-        System.out.println("Hit /api/movies/" + category);
+        // System.out.println("Hit /api/movies/" + category);
 
         LocalDate today = LocalDate.now();
 
-        Page<Movie> moviePage = movieRepository.findByCategoryAndReleaseDateGreaterThanEqual(
+        List<String> requestedLanguages = List.of(languages.split(","));
+
+        /*
+         * Page<Movie> moviePage =
+         * movieRepository.findByCategoryAndReleaseDateGreaterThanEqual(
+         * category,
+         * today,
+         * requestedLanguages,
+         * PageRequest.of(page, size, Sort.by("releaseDate").ascending()));
+         */
+        Page<Movie> moviePage = movieRepository.findByCategoryAndReleaseDateGreaterThanEqualAndLanguageIn(
                 category,
                 today,
+                requestedLanguages,
                 PageRequest.of(page, size, Sort.by("releaseDate").ascending()));
 
         return new MoviePageResponse(moviePage);

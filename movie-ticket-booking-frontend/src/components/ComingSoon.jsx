@@ -14,7 +14,7 @@ export default function ComingSoon() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://localhost:8081/api/upcomingmovies/upcoming?page=0&size=20')
+        fetch('http://localhost:8081/api/upcomingmovies/upcoming?page=0&size=20&languages=en,si,ja,ko,ta,hi')
             .then(res => {
                 if (!res.ok) throw new Error("Failed to fetch");
                 return res.json();
@@ -48,7 +48,7 @@ export default function ComingSoon() {
                 bg-clip-text text-transparent drop-shadow-lg animate-pulse select-none tracking-wide uppercase"
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
             >
-                Coming Soon
+                Upcoming Movies
                 <svg
                     className="w-8 h-8 text-pink-500 animate-bounce"
                     fill="none"
@@ -84,7 +84,7 @@ export default function ComingSoon() {
                         <SwiperSlide key={movie.id}>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-gray-800">
                                 <img
-                                    src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
+                                    src={`https://image.tmdb.org/t/p/w300${movie.posterPath}`}
                                     alt={movie.title || "No Title"}
                                     className="w-full h-72 object-cover"
                                 />
@@ -98,9 +98,9 @@ export default function ComingSoon() {
                                     <p className="text-gray-400 text-sm">
                                         {new Date(movie.releaseDate).toLocaleDateString()}
                                     </p>
-                                    <div className="mt-auto flex gap-3">
+                                    <div className="mt-auto flex gap-3 justify-center">
                                         <button
-                                            onClick={() => navigate(`/movies/${movie.tmdbId}`)}
+                                            onClick={() => navigate(`/movies/${movie.id}`)}
                                             className="flex items-center gap-2 bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm shadow-md"
                                         >
                                             <FaInfoCircle /> View More
