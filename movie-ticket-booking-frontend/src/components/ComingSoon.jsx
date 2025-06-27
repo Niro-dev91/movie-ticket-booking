@@ -62,7 +62,7 @@ export default function ComingSoon() {
             </h2>
 
             {/* Swiper Section */}
-            <div className="rounded-lg overflow-hidden shadow-lg bg-gray-900 px-5 py-3">
+            <div className="rounded-lg overflow-hidden shadow-lg bg-gray-900 px-5 py-3 ">
                 <Swiper
                     modules={[Navigation, Pagination, Autoplay]}
                     spaceBetween={20}

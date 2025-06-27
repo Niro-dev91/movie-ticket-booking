@@ -23,8 +23,9 @@ export default function Admin() {
                         <div className="p-6 text-2xl font-bold border-b border-indigo-800">Hello Admin</div>
                         <nav className="flex-grow p-6 space-y-4">
                             <Link to="/admin" className="block py-2 px-4 rounded hover:bg-indigo-700">Dashboard</Link>
-                            <Link to="/admin/users" className="block py-2 px-4 rounded hover:bg-indigo-700">Users</Link>
-                            <Link to="/admin/movie/add" className="block py-2 px-4 rounded hover:bg-indigo-700">Update Movie</Link>
+                            <Link to="/admin/users" className="block py-2 px-4 rounded hover:bg-indigo-700">User</Link>
+                            <Link to="/admin/movie" className="block py-2 px-4 rounded hover:bg-indigo-700">Movie</Link>
+                            <Link to="/admin/location" className="block py-2 px-4 rounded hover:bg-indigo-700">Location</Link>
                             <Link to="/admin/bookings" className="block py-2 px-4 rounded hover:bg-indigo-700">Bookings</Link>
                             <Link to="/admin/settings" className="block py-2 px-4 rounded hover:bg-indigo-700">Settings</Link>
                         </nav>
@@ -52,7 +53,7 @@ export default function Admin() {
                                 </div>
                             </>
                         ) : (
-                            <Outlet />  // Nested route like AddMovie shows here
+                            <Outlet />  
                         )}
                     </main>
                 </div>

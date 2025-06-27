@@ -14,6 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 //Admin pages
 import AddMovie from "./admin/movie/AddMovie";
+import AddLocation from "./admin/location/AddLocation";
 
 /* ProtectedRoute logic
 function ProtectedRoute({ children }) {
@@ -55,7 +56,8 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="movie/add" element={<AddMovie />} />
+            <Route path="movie" element={<AddMovie />} />
+            <Route path="location" element={<AddLocation />} />
           </Route>
         </Routes>
       </Router>
