@@ -62,33 +62,38 @@ export default function AddLocation() {
     setMessage("");
 
     try {
-      const data = {
+      const multipartFormData = new FormData();
+
+      // Prepare location JSON blob
+      const locationPayload = {
         theater_name: formData.theater_name,
         location_name: formData.location_name,
-        image: formData.imageUrl,
-        features: formData.features,
-        link: formData.link,
         address: formData.address,
         email: formData.email,
-        phone: formData.phone,
-        googleMap: formData.googleMap
+        phone_no: formData.phone,
+        google_map_link: formData.googleMap,
       };
 
-      await axios.post("http://localhost:8080/api/location/save", data);
+      const locationJson = JSON.stringify(locationPayload);
+      const locationBlob = new Blob([locationJson], { type: "application/json" });
+      multipartFormData.append("location", locationBlob, "location.json");
+
+      // Append features as multiple fields with the same name "features"
+      const featuresJson = JSON.stringify(formData.features);
+      multipartFormData.append("features", featuresJson);
+
+
+      // Append image file if present
+      if (formData.imageFile) {
+        multipartFormData.append("imageFile", formData.imageFile);
+      }
+
+      await axios.post("http://localhost:8080/api/location/save", multipartFormData, {
+        headers: {
+        },
+      });
 
       setMessage("Location added successfully!");
-      setFormData({
-        theater_name: "",
-        location_name: "",
-        imageUrl: "",
-        features: [],
-        link: "",
-        address: "",
-        email: "",
-        phone: "",
-        googleMap: "",
-        imageFile: null
-      });
     } catch (error) {
       console.error("Error saving location:", error);
       setMessage("Failed to add location.");
@@ -96,6 +101,8 @@ export default function AddLocation() {
       setLoading(false);
     }
   };
+
+
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow">
@@ -142,12 +149,12 @@ export default function AddLocation() {
         </div>
 
         <input
-          type="text"
+          type="hidden"
           name="link"
           readOnly
           placeholder="Link"
           value={formData.link}
-          className="w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+          className="w-full border rounded px-3 py-2 bg-gray-100"
         />
 
         <div>
@@ -158,11 +165,10 @@ export default function AddLocation() {
                 type="button"
                 key={feature}
                 onClick={() => handleFeatureToggle(feature)}
-                className={`px-3 py-1 rounded border ${
-                  formData.features.includes(feature)
-                    ? "bg-green-600 text-white border-green-700"
+                className={`px-3 py-1 rounded border ${formData.features.includes(feature)
+                    ? "bg-blue-600 text-white border-green-700"
                     : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 {feature}
               </button>
@@ -220,14 +226,6 @@ export default function AddLocation() {
         <p className="mt-4 font-semibold text-center text-green-600">
           {message}
         </p>
-      )}
-
-      {formData.imageUrl && (
-        <img
-          src={formData.imageUrl}
-          alt="Preview"
-          className="mt-6 w-64 rounded shadow mx-auto"
-        />
       )}
     </div>
   );
