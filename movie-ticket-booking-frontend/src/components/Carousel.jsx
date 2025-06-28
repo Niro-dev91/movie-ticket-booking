@@ -22,7 +22,7 @@ export default function Carousel() {
     }, []);
 
     return (
-        <div className="relative w-full min-h-screen overflow-hidden">
+        <div className="relative w-full  overflow-hidden">
             {/* Background */}
             <img
                 src="/assets/movie1.jpg"
@@ -41,7 +41,8 @@ export default function Carousel() {
             </h2>
 
             {/* Carousel */}
-            <div className="relative z-10 w-full max-w-screen-xl mx-auto py-12 px-4">
+            <div className="relative z-10 w-full max-w-screen-xl mx-auto px-4 py-16 h-screen">
+
                 <Swiper
                     modules={[Pagination, Navigation, Autoplay, EffectCoverflow]}
                     effect="coverflow"

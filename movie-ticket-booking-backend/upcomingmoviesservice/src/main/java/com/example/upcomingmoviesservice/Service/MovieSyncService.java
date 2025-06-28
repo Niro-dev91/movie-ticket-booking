@@ -61,35 +61,36 @@ public class MovieSyncService {
         int page = 1;
         boolean hasMorePages = true;
 
-        // System.out.println("Syncing category: " + category);
+        System.out.println("Syncing category: " + category);
+        if (category == "upcoming") {
+            while (hasMorePages) {
+                String url = TMDB_API_URL + category + "?api_key=" + apiKey + "&language=en-US&page=" + page;
 
-        while (hasMorePages) {
-            String url = TMDB_API_URL + category + "?api_key=" + apiKey + "&language=en-US&page=" + page;
+                // System.out.println("Calling TMDB URL: " + url);
+                try {
+                    ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+                    Map<String, Object> body = response.getBody();
+                    if (body == null)
+                        break;
 
-            // System.out.println("Calling TMDB URL: " + url);
-            try {
-                ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-                Map<String, Object> body = response.getBody();
-                if (body == null)
-                    break;
+                    List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+                    if (results == null || results.isEmpty())
+                        break;
 
-                List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
-                if (results == null || results.isEmpty())
-                    break;
+                    results.forEach(m -> saveOrUpdateMovie(m, category));
 
-                results.forEach(m -> saveOrUpdateMovie(m, category));
+                    int totalPages = (Integer) body.get("total_pages");
 
-                int totalPages = (Integer) body.get("total_pages");
+                    // TMDB API supports max 500 pages
+                    int safePageLimit = Math.min(totalPages, 500);
+                    page++;
+                    hasMorePages = page <= safePageLimit;
 
-                // TMDB API supports max 500 pages
-                int safePageLimit = Math.min(totalPages, 500);
-                page++;
-                hasMorePages = page <= safePageLimit;
-
-            } catch (Exception ex) {
-                System.err.println("Failed to sync category: " + category + " page " + page);
-                ex.printStackTrace();
-                break; // stop on error to avoid crash loop
+                } catch (Exception ex) {
+                    System.err.println("Failed to sync category: " + category + " page " + page);
+                    ex.printStackTrace();
+                    break; // stop on error to avoid crash loop
+                }
             }
         }
     }
@@ -112,17 +113,17 @@ public class MovieSyncService {
         String overview = (String) m.get("overview");
         String posterPath = (String) m.get("poster_path");
         String releaseDateStr = (String) m.get("release_date");
+        String language = (String) m.get("original_language"); 
         LocalDate releaseDate = (releaseDateStr != null && !releaseDateStr.isEmpty())
                 ? LocalDate.parse(releaseDateStr)
                 : null;
-
         // System.out.println("Evaluating movie: " + title + " | Release Date: " +
         // releaseDate);
 
         // Define filtering logic
-        LocalDate today = LocalDate.now(); // e.g., June 19
-        LocalDate startDate = today.minusMonths(2); // April 19
-        LocalDate endDate = today.plusMonths(2); // August 19
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusMonths(2);
+        LocalDate endDate = today.plusMonths(2);
 
         // System.out.println("Skipping movie: " + title + " | Release Date: " +
         // releaseDate);
@@ -142,6 +143,7 @@ public class MovieSyncService {
             existing.setReleaseDate(releaseDate);
             existing.setCategory(category);
             existing.setLastUpdated(now);
+            existing.setLanguage(language);
             movieRepository.save(existing);
         }, () -> {
             Movie newMovie = new Movie();
@@ -152,6 +154,8 @@ public class MovieSyncService {
             newMovie.setReleaseDate(releaseDate);
             newMovie.setCategory(category);
             newMovie.setLastUpdated(now);
+            newMovie.setLanguage(language); 
+
             movieRepository.save(newMovie);
         });
     }
