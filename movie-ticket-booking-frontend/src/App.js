@@ -9,11 +9,13 @@ import Trailer from './trailer/TrailerPlayer';
 import Booking from './booking/Booking';
 import MovieList from './movies/MovieList';
 import Location from './location/Location';
+import LocationDetail from './location/LocationDetail';
 import Deal from './deal/Deal';
 import ProtectedRoute from './components/ProtectedRoute';
 
 //Admin pages
 import AddMovie from "./admin/movie/AddMovie";
+import ShowtimeAdmin from './admin/showtime/ShowtimeAdmin';
 import AddLocation from "./admin/location/AddLocation";
 
 /* ProtectedRoute logic
@@ -37,6 +39,7 @@ function App() {
           <Route path="/location" element={<Location />} />
           <Route path="/deal" element={<Deal />} />
           <Route path="/movies/:movieId" element={<ViewMore />} />
+          <Route path="/location/LocationDetail/:locationLink" element={<LocationDetail />} />
           {/* Protected */}
           <Route
             path="/booking"
@@ -57,7 +60,9 @@ function App() {
             }
           >
             <Route path="movie" element={<AddMovie />} />
+            <Route path="showtime" element={<ShowtimeAdmin />} />
             <Route path="location" element={<AddLocation />} />
+            
           </Route>
         </Routes>
       </Router>
