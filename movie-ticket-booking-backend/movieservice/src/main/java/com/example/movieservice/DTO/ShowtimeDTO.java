@@ -10,11 +10,14 @@ public class ShowtimeDTO {
     private String endTime;
     private Integer seats;
 
+    private String title;
+    private String locationName;
+
     public ShowtimeDTO() {
     }
 
     public ShowtimeDTO(Long id, Long movieId, Long locationId,
-            String date, String startTime, String endTime, Integer seats) {
+            String date, String startTime, String endTime, Integer seats, String locationName, String title) {
         this.id = id;
         this.movieId = movieId;
         this.locationId = locationId;
@@ -22,6 +25,8 @@ public class ShowtimeDTO {
         this.startTime = startTime;
         this.endTime = endTime;
         this.seats = seats;
+        this.locationName = locationName;
+        this.title = title;
     }
 
     public Long getId() {
@@ -78,5 +83,21 @@ public class ShowtimeDTO {
 
     public void setSeats(Integer seats) {
         this.seats = seats;
+    }
+
+    public String getLocationName() {
+        return this.locationName;
+    }
+
+    public void setLocationName(String location_name) {
+        this.locationName = location_name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

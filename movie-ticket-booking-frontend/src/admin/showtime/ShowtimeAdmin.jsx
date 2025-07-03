@@ -44,7 +44,7 @@ export default function ShowtimeAdmin() {
     localStorage.setItem("showtimes", JSON.stringify(showtimes));
   }, [showtimes]);
 
-  // ✅ Add / Edit form submit
+  // Add / Edit form submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -71,13 +71,13 @@ export default function ShowtimeAdmin() {
     const datesInRange = getDatesInRange(startDate, endDate);
 
     const newShowtimes = datesInRange.map((date) => ({
-  movieId: parseInt(movieId, 10),
-  locationId: parseInt(locationId, 10),
-  date,
-  startTime,
-  endTime,
-  seats: parseInt(seats, 10),
-}));
+      movieId: parseInt(movieId, 10),
+      locationId: parseInt(locationId, 10),
+      date,
+      startTime,
+      endTime,
+      seats: parseInt(seats, 10),
+    }));
 
     if (editIndex === -1) {
       // Add new
@@ -93,7 +93,7 @@ export default function ShowtimeAdmin() {
     setFormData(initialFormState);
   };
 
-  // ✅ Edit
+  // Edit
   const handleEdit = (index) => {
     const showtime = showtimes[index];
     setFormData({
@@ -108,7 +108,7 @@ export default function ShowtimeAdmin() {
     setEditIndex(index);
   };
 
-  // ✅ Delete
+  // Delete
   const handleDelete = (index) => {
     if (window.confirm("Are you sure you want to delete this showtime?")) {
       setShowtimes(showtimes.filter((_, i) => i !== index));
@@ -119,7 +119,7 @@ export default function ShowtimeAdmin() {
     }
   };
 
-  // ✅ Clear all
+  // Clear all
   const clearAllShowtimes = () => {
     if (window.confirm("Are you sure you want to clear all showtimes?")) {
       setShowtimes([]);
@@ -128,7 +128,7 @@ export default function ShowtimeAdmin() {
     }
   };
 
-  // ✅ Save All to backend
+  //Save All to backend
   const saveToBackend = async () => {
     if (showtimes.length === 0) {
       alert("No showtimes to save.");
@@ -139,11 +139,12 @@ export default function ShowtimeAdmin() {
       console.log('Sending showtime to backend:', showtimes);
       await axios.post("http://localhost:8080/api/showtimes/save", showtimes);
       alert("Showtimes saved to backend successfully!");
-      // Optional: clear local after save
-      // setShowtimes([]);
+      // clear local after save
+      setShowtimes();
+      clearAllShowtimes();
     } catch (error) {
       console.error(error);
-      alert("Failed to save showtimes to backend.");
+      alert("Failed to save showtimes");
     }
   };
 

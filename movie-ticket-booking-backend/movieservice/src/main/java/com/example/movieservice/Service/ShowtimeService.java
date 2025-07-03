@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShowtimeService {
@@ -44,6 +46,23 @@ public class ShowtimeService {
         showtime.setSeats(dto.getSeats());
 
         return showtimeRepository.save(showtime);
+    }
+
+    public List<ShowtimeDTO> getShowtimes(LocalDate date, Long locationId) {
+        return showtimeRepository
+                .searchByDateAndLocation(date, locationId)
+                .stream()
+                .map(showtime -> new ShowtimeDTO(
+                        showtime.getId(),
+                        showtime.getMovie().getId(),
+                        showtime.getLocation().getId(),
+                        showtime.getDate() != null ? showtime.getDate().toString() : null,
+                        showtime.getStartTime() != null ? showtime.getStartTime().toString() : null,
+                        showtime.getEndTime() != null ? showtime.getEndTime().toString() : null,
+                        showtime.getSeats(),
+                        showtime.getLocation().getLocationName(),
+                        showtime.getMovie().getTitle()))
+                .collect(Collectors.toList());
     }
 
 }

@@ -17,6 +17,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AddMovie from "./admin/movie/AddMovie";
 import ShowtimeAdmin from './admin/showtime/ShowtimeAdmin';
 import AddLocation from "./admin/location/AddLocation";
+import PricingAdmin from './admin/price/PricingAdmin';
 
 /* ProtectedRoute logic
 function ProtectedRoute({ children }) {
@@ -62,7 +63,7 @@ function App() {
             <Route path="movie" element={<AddMovie />} />
             <Route path="showtime" element={<ShowtimeAdmin />} />
             <Route path="location" element={<AddLocation />} />
-            
+            <Route path="pricing" element={<PricingAdmin />} />
           </Route>
         </Routes>
       </Router>
