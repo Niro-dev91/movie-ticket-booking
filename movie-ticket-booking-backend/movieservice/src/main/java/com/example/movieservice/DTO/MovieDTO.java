@@ -21,9 +21,10 @@ public class MovieDTO {
     public MovieDTO() {
     }
 
-    public MovieDTO(String title, String overview, String posterUrl, String backdropUrl, LocalDate releaseDate,
+    public MovieDTO(Long Id, String title, String overview, String posterUrl, String backdropUrl, LocalDate releaseDate,
             String category,
             String videoLink, Long tmdbId, Double rate, String tagline, List<String> genres) {
+        this.Id = Id;
         this.title = title;
         this.overview = overview;
         this.posterUrl = posterUrl;
@@ -37,13 +38,13 @@ public class MovieDTO {
         this.genres = genres;
     }
 
-      public MovieDTO(Long Id,String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
+    public MovieDTO(Long Id, String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
         this.Id = Id;
         this.title = title;
         this.tagline = tagline;
         this.videoLink = videoLink;
         this.backdropUrl = backdropUrl;
-        this.posterUrl   = posterUrl;
+        this.posterUrl = posterUrl;
     }
 
     public Long getId() {

@@ -1,19 +1,43 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function ShowtimeForm({ formData, setFormData, handleSubmit }) {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const [movies, setMovies] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    if (name.startsWith("pricing.")) {
-      const key = name.split(".")[1];
-      setFormData({
-        ...formData,
-        pricing: { ...formData.pricing, [key]: value },
-      });
-    } else {
-      setFormData({ ...formData, [name]: value });
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const moviesRes = await axios.get("http://localhost:8080/api/movies/allmovies");
+      setMovies(moviesRes.data);
+
+      const locationsRes = await axios.get("http://localhost:8080/api/location/all");
+      setLocations(locationsRes.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load movie or location details.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    
+  };
+
+  if (loading) return <p className="text-center">Loading...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
     <form
@@ -26,32 +50,32 @@ export default function ShowtimeForm({ formData, setFormData, handleSubmit }) {
         <div>
           <label className="block mb-1 font-medium">Movie</label>
           <select
-            name="movie"
-            value={formData.movie}
+            name="movieId"
+            className="border p-2 rounded w-full"
+            value={formData.movieId}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
             required
           >
-            <option value="">Select Movie</option>
-            <option>Movie 1</option>
-            <option>Movie 2</option>
-            <option>Movie 3</option>
+            <option value="">Select a movie</option>
+            {movies.map((m) => (
+              <option key={m.id} value={m.id}>{m.title}</option>
+            ))}
           </select>
         </div>
 
         <div>
           <label className="block mb-1 font-medium">Location</label>
           <select
-            name="location"
-            value={formData.location}
+            name="locationId"
+            value={formData.locationId}
             onChange={handleChange}
             className="w-full p-2 border rounded"
             required
           >
-            <option value="">Select Location</option>
-            <option>Location 1</option>
-            <option>Location 2</option>
-            <option>Location 3</option>
+            <option value="">Select a location</option>
+            {locations.map((l) => (
+              <option key={l.id} value={l.id}>{l.locationName}</option>
+            ))}
           </select>
         </div>
 
@@ -119,7 +143,7 @@ export default function ShowtimeForm({ formData, setFormData, handleSubmit }) {
 
       <button
         type="submit"
-        className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
+        className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
       >
         Save Showtime
       </button>
