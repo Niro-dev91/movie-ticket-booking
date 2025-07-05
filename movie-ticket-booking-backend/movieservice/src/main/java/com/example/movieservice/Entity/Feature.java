@@ -3,7 +3,6 @@ package com.example.movieservice.Entity;
 import jakarta.persistence.*;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -17,7 +16,6 @@ public class Feature {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "features")
     private List<Location> locations;
 

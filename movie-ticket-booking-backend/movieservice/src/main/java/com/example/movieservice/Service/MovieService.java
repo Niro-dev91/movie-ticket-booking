@@ -125,7 +125,6 @@ private String buildImageUrl(String path) {
         return movieRepository.findAll()
                 .stream()
                 .map(movie -> new MovieDetailDTO(
-                    movie.getId(),
                         movie.getTmdbId(),
                         movie.getTitle(),
                         movie.getTagline(),
