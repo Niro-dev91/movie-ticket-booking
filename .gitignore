@@ -16,3 +16,7 @@ Thumbs.db
 # Ignore H2 database files
 data/*.mv.db
 data/*.trace.db
+
+/data/
+
+/*/*.properties
