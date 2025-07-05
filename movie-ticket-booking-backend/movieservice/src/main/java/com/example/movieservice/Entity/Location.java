@@ -18,20 +18,16 @@ public class Location {
     @JsonProperty("theater_name")
     private String theater_name;
 
-    @Column(length = 1000)
-    @JsonProperty("description")
-    private String description;
-
     @Column(nullable = false)
+
     @JsonProperty("location_name")
     private String location_name;
 
     @JsonProperty("imageUrl")
     private String imageUrl;
 
-    @Column(name = "locationLink")
-    @JsonProperty("locationLink")
-    private String locationLink;
+    @JsonProperty("location_link")
+    private String location_link;
 
     @JsonProperty("address")
     private String address;
@@ -41,41 +37,13 @@ public class Location {
 
     @JsonProperty("phone_no")
     private String phone_no;
-
+    
     @JsonProperty("google_map_link")
     private String google_map_link;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "theater_features", joinColumns = @JoinColumn(name = "location_id"), inverseJoinColumns = @JoinColumn(name = "feature_id"))
     private List<Feature> features = new ArrayList<>();
-
-    public Location() {
-    }
-
-    public Location(
-            Long id,
-            String theaterName,
-            String description,
-            String locationName,
-            String imageUrl,
-            String locationLink,
-            List<Feature> features,
-            String address,
-            String email,
-            String phoneNo,
-            String googleMapLink) {
-        this.id = id;
-        this.theater_name = theaterName;
-        this.description = description;
-        this.location_name = locationName;
-        this.imageUrl = imageUrl;
-        this.locationLink = locationLink;
-        this.features = features;
-        this.address = address;
-        this.email = email;
-        this.phone_no = phoneNo;
-        this.google_map_link = googleMapLink;
-    }
 
     public Long getId() {
         return this.id;
@@ -91,14 +59,6 @@ public class Location {
 
     public void setTheaterName(String theater_name) {
         this.theater_name = theater_name;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getLocationName() {
@@ -118,12 +78,12 @@ public class Location {
     }
 
     public String getLocationLink() {
-        return this.locationLink;
+        return this.location_link;
     }
 
-    public void setLocationLink(String locationLink) {
-    this.locationLink = locationLink;
-}
+    public void setLocationLink(String location_link) {
+        this.location_link = location_link;
+    }
 
     public String getAddress() {
         return this.address;

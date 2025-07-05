@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,19 +50,8 @@ public class MovieController {
                 + "&language=en-US";
 
         try {
-            ResponseEntity<Map> response;
-            try {
-                response = restTemplate.getForEntity(url, Map.class);
-            } catch (HttpClientErrorException.NotFound e) {
-                System.out.println("No search results found for query: " + query);
-                return ResponseEntity.ok(Collections.emptyList());
-            }
-
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
             List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody().get("results");
-
-            if (results == null || results.isEmpty()) {
-                return ResponseEntity.ok(Collections.emptyList());
-            }
 
             List<Map<String, Object>> movies = new ArrayList<>();
 
@@ -90,28 +78,20 @@ public class MovieController {
 
                 // Fetch trailer URL for movie
                 String trailerUrl = (movieId != null) ? trailerService.getTrailer(movieId) : null;
-                if (trailerUrl == null) {
-                    newMovie.put("video", "not available");
-                } else {
-                    newMovie.put("video", trailerUrl);
-                }
+                newMovie.put("video", trailerUrl);
 
                 // Fetch detailed info to get tagline
-                String tagline = "";
                 if (movieId != null) {
                     String detailUrl = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey;
-                    try {
-                        ResponseEntity<Map> detailResponse = restTemplate.getForEntity(detailUrl, Map.class);
-                        if (detailResponse.getBody() != null) {
-                            tagline = (String) detailResponse.getBody().get("tagline");
-                        }
-                    } catch (HttpClientErrorException.NotFound e) {
-                        System.out.println("Movie details not found for movie ID " + movieId);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    // + "&language=en-US";
+                    ResponseEntity<Map> detailResponse = restTemplate.getForEntity(detailUrl, Map.class);
+                    if (detailResponse.getBody() != null) {
+                        String tagline = (String) detailResponse.getBody().get("tagline");
+                        newMovie.put("tagline", tagline);
+                    } else {
+                        newMovie.put("tagline", "");
                     }
                 }
-                newMovie.put("tagline", tagline != null ? tagline : "");
 
                 movies.add(newMovie);
             }
@@ -129,7 +109,7 @@ public class MovieController {
     public ResponseEntity<?> addMovie(
             @RequestPart("title") String title,
             @RequestPart("overview") String overview,
-            @RequestPart("releaseDate") String releaseDateStr,
+            @RequestPart("releaseDate") String releaseDateStr, 
             @RequestPart(value = "tmdbId", required = false) String tmdbIdStr,
             @RequestPart(value = "rate", required = false) String rateStr,
             @RequestPart(value = "videoLink", required = false) String videoLink,
@@ -138,11 +118,11 @@ public class MovieController {
             @RequestPart(value = "posterFile", required = false) MultipartFile posterFile,
             @RequestPart(value = "posterUrl", required = false) String posterUrl,
             @RequestPart(value = "backdropFile", required = false) MultipartFile backdropFile,
-            @RequestPart(value = "backdropUrl", required = false) String backdropUrl) {
+            @RequestPart(value = "backdropUrl", required = false) String backdropUrl
+    ) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            List<String> genres = objectMapper.readValue(genresJson, new TypeReference<List<String>>() {
-            });
+            List<String> genres = objectMapper.readValue(genresJson, new TypeReference<List<String>>() {});
 
             LocalDate releaseDate = LocalDate.parse(releaseDateStr);
 
@@ -181,7 +161,7 @@ public class MovieController {
         return movieService.getAllMovies();
     }
 
-    @GetMapping("/movie/{id}") // movie detalis
+    @GetMapping("/movie/{id}")//movie detalis
     public String getMovie(@PathVariable String id) {
         return movieService.getMovieDetails(id);
     }

@@ -21,12 +21,6 @@ target/
 
 # Ignore property files
 **/src/main/resources/application.properties
-/*/*.properties
-
-# Ignore the data folder
-/data/
-
-
 
 ### NetBeans ###
 /nbproject/private/
