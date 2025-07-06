@@ -9,6 +9,7 @@ export default function AddLocation() {
 
   const [formData, setFormData] = useState({
     theater_name: "",
+    description: "",
     location_name: "",
     imageUrl: "",
     features: [],
@@ -26,7 +27,7 @@ export default function AddLocation() {
 
     if (name === "location_name") {
       // Auto generate link based on location name
-      const autoLink = "/location/" + value.trim().toLowerCase().replace(/\s+/g, "_");
+      const autoLink = value.trim().toLowerCase().replace(/\s+/g, "_");
       setFormData(prev => ({
         ...prev,
         location_name: value,
@@ -64,19 +65,23 @@ export default function AddLocation() {
     try {
       const multipartFormData = new FormData();
 
-      // Prepare location JSON blob
+      // Prepare location JSON 
       const locationPayload = {
         theater_name: formData.theater_name,
+        description: formData.description,
         location_name: formData.location_name,
+        locationLink: formData.link,
         address: formData.address,
         email: formData.email,
         phone_no: formData.phone,
         google_map_link: formData.googleMap,
       };
 
+      /* const locationJson = JSON.stringify(locationPayload);
+     const locationBlob = new Blob([locationJson], { type: "application/json" });
+        multipartFormData.append("location", locationBlob, "location.json");*/
       const locationJson = JSON.stringify(locationPayload);
-      const locationBlob = new Blob([locationJson], { type: "application/json" });
-      multipartFormData.append("location", locationBlob, "location.json");
+      multipartFormData.append("location", locationJson);
 
       // Append features as multiple fields with the same name "features"
       const featuresJson = JSON.stringify(formData.features);
@@ -119,7 +124,14 @@ export default function AddLocation() {
           className="w-full border rounded px-3 py-2"
           required
         />
-
+        <textarea
+          name="description"
+          placeholder="Description"
+          rows="3"
+          value={formData.description}
+          onChange={handleChange}
+          className="w-full border rounded px-3 py-2"
+        />
         <input
           type="text"
           name="location_name"
@@ -166,8 +178,8 @@ export default function AddLocation() {
                 key={feature}
                 onClick={() => handleFeatureToggle(feature)}
                 className={`px-3 py-1 rounded border ${formData.features.includes(feature)
-                    ? "bg-blue-600 text-white border-green-700"
-                    : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
+                  ? "bg-blue-600 text-white border-green-700"
+                  : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
                   }`}
               >
                 {feature}
