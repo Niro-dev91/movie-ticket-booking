@@ -21,8 +21,7 @@ public class MovieDetailDTO {
     public MovieDetailDTO() {
     }
 
-      public MovieDetailDTO(Long Id,Long tmdbId,String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
-        this.Id =Id;
+      public MovieDetailDTO(Long tmdbId,String title, String tagline, String videoLink, String backdropUrl, String posterUrl) {
         this.tmdbId = tmdbId;
         this.title = title;
         this.tagline = tagline;

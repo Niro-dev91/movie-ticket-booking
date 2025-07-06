@@ -13,14 +13,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class LocationService {
 
-    @Value("${upload.path}")
+    @Value("${uploadlocation.path}")
     private String uploadDir;
 
     private final LocationRepository locationRepository;
@@ -70,53 +68,4 @@ public class LocationService {
 
         return uniqueFileName;
     }
-
-    public List<Location> getAllLocations() {
-        // return locationRepository.findAll();
-        return locationRepository.findAll()
-                .stream()
-                .map(location -> new Location(
-                        location.getId(),
-                        location.getTheaterName(),
-                        location.getDescription(),
-                        location.getLocationName(),
-                        buildImageUrl(location.getImageUrl()),
-                        location.getLocationLink(),
-                        location.getFeatures(),
-                        location.getAddress(),
-                        location.getEmail(),
-                        location.getPhoneNo(),
-                        location.getGoogleMapLink()))
-                .collect(Collectors.toList());
-    }
-
-    private String buildImageUrl(String path) {
-        if (path == null) {
-            return null;
-        }
-        return "http://localhost:8080/uploads/" + path;
-    }
-
-    /*
-     * public Optional<Location> findByLocationLink(String locationLink) {
-     * return locationRepository.findBylocationLink(locationLink);
-     * }
-     */
-    public Location findByLocationLink(String locationLink) {
-        return locationRepository.findBylocationLink(locationLink)
-                .map(location -> new Location(
-                        location.getId(),
-                        location.getTheaterName(),
-                        location.getDescription(),
-                        location.getLocationName(),
-                        buildImageUrl(location.getImageUrl()),
-                        location.getLocationLink(),
-                        location.getFeatures(),
-                        location.getAddress(),
-                        location.getEmail(),
-                        location.getPhoneNo(),
-                        location.getGoogleMapLink()))
-                .orElseThrow(() -> new RuntimeException("Location not found with link: " + locationLink));
-    }
-
 }
