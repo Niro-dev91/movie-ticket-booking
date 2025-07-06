@@ -22,8 +22,8 @@ public class TicketPriceController {
     @PutMapping("/save")
     public ResponseEntity<?> saveAllPricing(@RequestBody List<TicketPriceDTO> pricingList) {
         for (TicketPriceDTO dto : pricingList) {
-            System.out.println("Saving ticket price for showtimeId: " + dto.getShowtimeId() + ", seatCategoryId: "
-                    + dto.getSeatCategoryId() + ", price: " + dto.getPrice());
+        //    System.out.println("Saving ticket price for showtimeId: " + dto.getShowtimeId() + ", seatCategoryId: "
+        //            + dto.getSeatCategoryId() + ", price: " + dto.getPrice());
             ticketPriceService.addTicketPrice(
                     dto.getShowtimeId(),
                     dto.getSeatCategoryId(),
