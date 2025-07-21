@@ -2,14 +2,13 @@ package com.example.movieservice.Controller;
 
 import com.example.movieservice.Entity.Feature;
 import com.example.movieservice.Entity.Location;
+import com.example.movieservice.Repository.FeatureRepository;
 import com.example.movieservice.Service.LocationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,9 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class LocationController {
 
     private final LocationService locationService;
+    private final FeatureRepository featureRepository;
 
-    public LocationController(LocationService locationService) {
+    public LocationController(LocationService locationService, FeatureRepository featureRepository) {
         this.locationService = locationService;
+        this.featureRepository = featureRepository;
     }
 
     /*
@@ -64,7 +65,7 @@ public class LocationController {
             @RequestPart("location") String locationJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestPart("features") String featuresJson) throws JsonProcessingException {
-      //  System.out.println("Received location JSON: " + locationJson);
+        // System.out.println("Received location JSON: " + locationJson);
 
         ObjectMapper mapper = new ObjectMapper();
         Location location = mapper.readValue(locationJson, Location.class);
@@ -91,4 +92,8 @@ public class LocationController {
         return locationService.findByLocationLink(locationLink);
     }
 
+    @GetMapping("/allFeatures")
+    public List<Feature> getFeatures() {
+        return featureRepository.findAll();
+    }
 }
