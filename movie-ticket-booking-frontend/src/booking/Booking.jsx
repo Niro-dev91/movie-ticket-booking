@@ -48,7 +48,7 @@ const Booking = () => {
     fetchLocationsAndMovies();
   }, []);
 
-  // Fetch showtimes whenever filters change
+  // Fetch movie showtimes whenever filters change
   useEffect(() => {
     const fetchShowtimes = async () => {
       setLoading(true);
