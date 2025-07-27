@@ -10,6 +10,7 @@ import Booking from './booking/Booking';
 import MovieList from './movies/MovieList';
 import Location from './location/Location';
 import LocationDetail from './location/LocationDetail';
+import SeatBooking from './seats/SeatBooking';
 import Deal from './deal/Deal';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -18,6 +19,7 @@ import AddMovie from "./admin/movie/AddMovie";
 import ShowtimeAdmin from './admin/showtime/ShowtimeAdmin';
 import AddLocation from "./admin/location/AddLocation";
 import PricingAdmin from './admin/price/PricingAdmin';
+import SeatAdmin    from'./admin/seats/SeatAdmin';
 
 /* ProtectedRoute logic
 function ProtectedRoute({ children }) {
@@ -50,6 +52,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/booking/:showtimeId"
+            element={
+              <ProtectedRoute>
+                <SeatBooking />
+              </ProtectedRoute>
+            }
+          />
+
 
           {/* Admin only */}
           <Route
@@ -64,6 +75,7 @@ function App() {
             <Route path="showtime" element={<ShowtimeAdmin />} />
             <Route path="location" element={<AddLocation />} />
             <Route path="pricing" element={<PricingAdmin />} />
+            <Route path="seats" element={<SeatAdmin />} />
           </Route>
         </Routes>
       </Router>
