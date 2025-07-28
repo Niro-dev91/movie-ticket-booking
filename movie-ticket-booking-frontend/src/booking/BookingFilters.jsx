@@ -84,7 +84,7 @@ const BookingFilters = ({ locations, movies, features, filters, setFilters }) =>
             </select>
           </div>
 
-          {/* Offer Filter */}
+          {/* Offers and deal Filter */}
           <div className={filterStyle}>
             <Tag size={18} />
             <select

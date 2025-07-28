@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Film,
   MapPin,
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 
 const BookingView = ({ showtimes }) => {
+  const navigate = useNavigate();
   return (
     <div className="p-6 bg-gray-50 rounded-2xl shadow-inner min-h-[300px]">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 border-b pb-2">
@@ -77,7 +79,7 @@ const BookingView = ({ showtimes }) => {
                   <div className="mt-auto flex justify-end">
                     <button
                       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                      onClick={() => alert(`Booking for ${s.movie?.title} on ${s.date} at ${s.startTime}`)}
+                      onClick={() => navigate(`/booking/${s.id}`)}
                     >
                       Book
                     </button>
