@@ -21,7 +21,7 @@ export default function SeatLayout({ seatData, setSeatData }) {
     }
     const seats = Array(newRowSeatCount)
       .fill(null)
-      .map((_, i) => ({ id: i + 1, status: "seat" }));
+      .map((_, i) => ({ id: i + 1, status: "seat", seatType: "Normal" }));
 
     setSeatData([...seatData, { label, seats }]);
     setNewRowLabel("");
@@ -48,7 +48,7 @@ export default function SeatLayout({ seatData, setSeatData }) {
     if (count > currentCount) {
       const seatsToAdd = Array(count - currentCount)
         .fill(null)
-        .map((_, i) => ({ id: currentCount + i + 1, status: "seat" }));
+        .map((_, i) => ({ id: currentCount + i + 1, status: "seat", seatType: "Normal" }));
       seats = [...seats, ...seatsToAdd];
     } else if (count < currentCount) {
       seats = seats.slice(0, count);
@@ -66,7 +66,16 @@ export default function SeatLayout({ seatData, setSeatData }) {
     const seats = [...row.seats];
     const seat = { ...seats[seatIndex] };
 
+    // Not allow toggling Unavailable seats
+    if (seat.seatType === "Unavailable") return;
+
     seat.status = seat.status === "seat" ? "space" : "seat";
+
+    if (seat.status === "space") {
+      delete seat.seatType;
+    } else {
+      if (!seat.seatType) seat.seatType = "Normal";
+    }
 
     seats[seatIndex] = seat;
     row.seats = seats;
@@ -76,21 +85,18 @@ export default function SeatLayout({ seatData, setSeatData }) {
   };
 
   const saveLayout = async () => {
-    // Map seatData to the backend-friendly format:
-    // For seats with status "seat", assign mapId like 'A1', 'A2', etc.
-    // Remove 'id' field before sending to backend to avoid conflicts.
     const mapped = seatData.map((row) => {
       let seatNumber = 0;
       const seats = row.seats.map((seat) => {
         if (seat.status === "seat") {
           seatNumber++;
           return {
-            seatNumber, // add seatNumber as integer 
+            seatNumber,
             status: seat.status,
-            mapId: `${row.label}${seatNumber}`, // e.g. A1, A2
+            seatType: seat.seatType || "Normal",
+            mapId: `${row.label}${seatNumber}`,
           };
         } else {
-          // For spaces, no seatNumber or mapId 
           return {
             status: seat.status,
           };
@@ -120,7 +126,6 @@ export default function SeatLayout({ seatData, setSeatData }) {
       console.error(error);
     }
   };
-
 
   return (
     <div className="space-y-6">
@@ -160,8 +165,8 @@ export default function SeatLayout({ seatData, setSeatData }) {
             key={row.label}
             onClick={() => setSelectedRowIndex(idx)}
             className={`px-4 py-2 rounded whitespace-nowrap border ${idx === selectedRowIndex
-                ? "bg-blue-600 text-white border-blue-600"
-                : "bg-gray-200 hover:bg-gray-300"
+              ? "bg-blue-600 text-white border-blue-600"
+              : "bg-gray-200 hover:bg-gray-300"
               }`}
           >
             Row {row.label} ({row.seats.length})
@@ -177,7 +182,7 @@ export default function SeatLayout({ seatData, setSeatData }) {
         )}
       </div>
 
-      {/* Seat count and seat toggling */}
+      {/* Seat count and seat toggling + seat type */}
       {selectedRowIndex !== null && (
         <div>
           <h3 className="text-lg font-semibold mb-3">
@@ -195,19 +200,57 @@ export default function SeatLayout({ seatData, setSeatData }) {
             />
           </label>
 
-          <div className="flex flex-wrap gap-2 max-w-full overflow-auto">
+          <div className="flex flex-wrap gap-4 max-w-full overflow-auto">
             {seatData[selectedRowIndex].seats.map((seat, idx) => (
-              <button
+              <div
                 key={`${seatData[selectedRowIndex].label}-${seat.id}`}
-                onClick={() => toggleSeatStatus(idx)}
-                className={`w-10 h-10 rounded border select-none ${seat.status === "seat"
-                    ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-transparent cursor-default"
-                  }`}
-                title={`Seat ${seat.id} is ${seat.status}`}
+                className="flex flex-col items-center"
               >
-                {seat.status === "seat" ? seat.id : ""}
-              </button>
+                <button
+                  onClick={() => toggleSeatStatus(idx)}
+                  className={`w-10 h-10 rounded border select-none mb-1
+                    ${seat.status === "seat"
+                      ? seat.seatType === "VIP"
+                        ? "bg-red-600 text-white hover:bg-red-700"
+                        : seat.seatType === "Normal"
+                          ? "bg-green-500 text-white hover:bg-green-600"
+                          : seat.seatType === "Couple"
+                            ? "bg-purple-600 text-white hover:bg-purple-700"
+                            : seat.seatType === "Unavailable"
+                              ? "bg-gray-600 text-white cursor-not-allowed"
+                              : "bg-gray-500 text-white"
+                      : "bg-transparent cursor-default"
+                    }
+                  `}
+                  title={`Seat ${seat.id} is ${seat.status} (${seat.seatType || "None"})`}
+                  disabled={seat.seatType === "Unavailable"}
+                >
+                  {seat.status === "seat" ? seat.id : ""}
+                </button>
+
+                {seat.status === "seat" && (
+                  <select
+                    value={seat.seatType}
+                    onChange={(e) => {
+                      const newData = [...seatData];
+                      newData[selectedRowIndex] = { ...newData[selectedRowIndex] };
+                      newData[selectedRowIndex].seats = [...newData[selectedRowIndex].seats];
+                      newData[selectedRowIndex].seats[idx] = {
+                        ...newData[selectedRowIndex].seats[idx],
+                        seatType: e.target.value,
+                      };
+                      setSeatData(newData);
+                    }}
+                    className="text-xs rounded border p-1 w-full"
+                    disabled={seat.seatType === "Unavailable"}
+                  >
+                    <option value="Normal">Normal</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Couple">Couple</option>
+                    <option value="Unavailable">Unavailable</option>
+                  </select>
+                )}
+              </div>
             ))}
           </div>
         </div>

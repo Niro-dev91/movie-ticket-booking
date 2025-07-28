@@ -15,6 +15,7 @@ public class Seat {
     private int seatNumber;
     private String status;
     private String mapId;
+    private String seatType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "row_id")
@@ -58,8 +59,16 @@ public class Seat {
         this.row = row;
     }
 
+    public String getSeatType() {
+        return seatType;
+    }
+
+    public void setSeatType(String seatType) {
+        this.seatType = seatType;
+    }
+
     @Override
     public String toString() {
-        return "Seat{" + "id=" + id + ", seatNumber=" + seatNumber + '}';
+        return "Seat{" + "id=" + id + ", seatNumber=" + seatNumber + ", seatType=" + seatType + '}';
     }
 }
