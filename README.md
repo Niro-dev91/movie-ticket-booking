@@ -18,4 +18,4 @@ User Authentication and Authorization ( Role Based Access Control & JWT etc.).
 
 Payment integration.
 
-Current Tech Stack : React js, TailwindCSS, Swiper.js, Java, Spring Boot, Spring JPA, Spring Scheduler, Hibernate, JWT ,Rest API
+Current Tech Stack : React js, TailwindCSS, Swiper.js, Java, Spring Boot, Spring JPA, Spring Scheduler, Hibernate, JWT, Rest API
