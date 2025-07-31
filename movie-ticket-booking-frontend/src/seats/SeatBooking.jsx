@@ -12,6 +12,9 @@ const SeatBooking = ({ data }) => {
   const goToBooking = () => {
     navigate('/booking');
   };
+  const goToReservation = () => {
+    navigate('/payment');
+  };
 
 
   const toggleSeat = (mapId) => {
@@ -218,8 +221,7 @@ const SeatBooking = ({ data }) => {
 
           {/* Continue Button */}
           <button
-            onClick={goToSummary}
-            disabled={selectedSeats.length === 0}
+            onClick={goToReservation}
             className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400"
             type="button"
           >
