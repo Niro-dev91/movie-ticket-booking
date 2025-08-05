@@ -22,6 +22,7 @@ import ShowtimeAdmin from './admin/showtime/ShowtimeAdmin';
 import AddLocation from "./admin/location/AddLocation";
 import PricingAdmin from './admin/price/PricingAdmin';
 import SeatAdmin from './admin/seats/SeatAdmin';
+import CafeAdmin from './admin/cafe/FoodMenu';
 
 /* ProtectedRoute logic
 function ProtectedRoute({ children }) {
@@ -86,6 +87,7 @@ function App() {
             <Route path="location" element={<AddLocation />} />
             <Route path="pricing" element={<PricingAdmin />} />
             <Route path="seats" element={<SeatAdmin />} />
+            <Route path="cafe" element={<CafeAdmin />} />
           </Route>
         </Routes>
       </Router>
