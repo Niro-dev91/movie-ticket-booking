@@ -10,7 +10,7 @@ import com.example.movieservice.Service.FoodService;
 
 @RestController
 @RequestMapping("/api/food-items")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "*")
 public class FoodController {
 
     private final FoodService foodService;
@@ -27,5 +27,11 @@ public class FoodController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<FoodItemDTO>> getAllFoodItems() {
+        List<FoodItemDTO> items = foodService.getAllItems();
+        return ResponseEntity.ok(items);
     }
 }

@@ -1,41 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCart } from "../payment/CartContext";
-
-const allItems = {
-    Coffee: [
-        { id: 1, name: "Mochaccino", price: 700, img: "https://via.placeholder.com/60" },
-        { id: 2, name: "Hot Chocolate", price: 700, img: "https://via.placeholder.com/60" },
-        { id: 3, name: "Americano", price: 700, img: "https://via.placeholder.com/60" },
-    ],
-    Popcorn: [
-        { id: 4, name: "Cheese Popcorn", price: 850, img: "https://via.placeholder.com/60" },
-    ],
-    Combo: [
-        { id: 5, name: "Movie Combo", price: 1500, img: "https://via.placeholder.com/60" },
-    ],
-    "Hot Kitchen": [
-        { id: 6, name: "Fried Chicken", price: 1200, img: "https://via.placeholder.com/60" },
-    ],
-    Juice: [
-        { id: 7, name: "Orange Juice", price: 500, img: "https://via.placeholder.com/60" },
-    ],
-    Desserts: [
-        { id: 8, name: "Brownie", price: 600, img: "https://via.placeholder.com/60" },
-    ],
-    Beverage: [
-        { id: 9, name: "Coca Cola", price: 400, img: "https://via.placeholder.com/60" },
-    ],
-};
-
-const categories = Object.keys(allItems);
+import axios from "axios";
 
 export default function FoodAndBeverage() {
-    const [activeTab, setActiveTab] = useState("Coffee");
+    const [categories, setCategories] = useState([]);
+    const [itemsByCategory, setItemsByCategory] = useState({});
+    const [activeTab, setActiveTab] = useState("");
     const [quantities, setQuantities] = useState({});
     const { addToCart } = useCart();
 
+    useEffect(() => {
+        fetchCategoriesAndItems();
+    }, []);
+
+    const fetchCategoriesAndItems = async () => {
+        try {
+            const [categoryRes, itemRes] = await Promise.all([
+                axios.get("http://localhost:8080/api/food-categories/all"),
+                axios.get("http://localhost:8080/api/food-items/all"),
+            ]);
+
+            const categories = categoryRes.data;
+            const items = itemRes.data;
+
+            setCategories(categories);
+            if (categories.length > 0) setActiveTab(categories[0].name);
+
+            // Group items by category name
+            const grouped = {};
+            categories.forEach(cat => {
+                grouped[cat.name] = items.filter(item => item.categoryName === cat.name);
+            });
+
+            setItemsByCategory(grouped);
+        } catch (error) {
+            console.error("Error fetching food data:", error);
+        }
+    };
+
     const handleQuantityChange = (id, amount) => {
-        setQuantities((prev) => ({
+        setQuantities(prev => ({
             ...prev,
             [id]: Math.max(1, (prev[id] || 1) + amount),
         }));
@@ -56,28 +60,28 @@ export default function FoodAndBeverage() {
             <div className="flex gap-2 flex-wrap mb-6">
                 {categories.map((cat) => (
                     <button
-                        key={cat}
-                        onClick={() => setActiveTab(cat)}
-                        className={`px-4 py-2 rounded-md border text-sm font-medium ${activeTab === cat
+                        key={cat.id}
+                        onClick={() => setActiveTab(cat.name)}
+                        className={`px-4 py-2 rounded-md border text-sm font-medium ${activeTab === cat.name
                             ? "bg-pink-100 text-pink-600 border-pink-500"
                             : "bg-gray-100 text-gray-600 border-transparent"
                             }`}
                     >
-                        {cat}
+                        {cat.name}
                     </button>
                 ))}
             </div>
 
             {/* Items List */}
             <div className="space-y-4">
-                {allItems[activeTab].map((item) => (
+                {itemsByCategory[activeTab]?.map((item, index) => (
                     <div
-                        key={item.id}
+                        key={index}
                         className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4"
                     >
                         {/* Image */}
                         <img
-                            src={item.img}
+                            src={item.image}
                             alt={item.name}
                             className="w-16 h-16 rounded object-cover"
                         />

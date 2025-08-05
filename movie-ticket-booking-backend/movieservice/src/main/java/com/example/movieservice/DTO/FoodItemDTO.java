@@ -6,6 +6,7 @@ public class FoodItemDTO {
     private String description;
     private Long categoryId;
     private String image; // base64 string
+    private String categoryName;
 
     public String getName() {
         return name;
@@ -45,5 +46,13 @@ public class FoodItemDTO {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
