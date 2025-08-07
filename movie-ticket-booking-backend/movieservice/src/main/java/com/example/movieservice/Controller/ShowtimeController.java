@@ -61,4 +61,14 @@ public class ShowtimeController {
         return ResponseEntity.ok(results);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ShowtimeDTO> getShowtimeById(@PathVariable Long id) {
+        ShowtimeDTO showtimeDTO = showtimeService.getShowtimeById(id);
+        if (showtimeDTO != null) {
+            return ResponseEntity.ok(showtimeDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

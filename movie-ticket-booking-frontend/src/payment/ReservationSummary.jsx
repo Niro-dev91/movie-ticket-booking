@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../components/Navbar";
-import MovieDetails from "../payment/MovieDetails";
+import MovieDetails from "../components/MovieDetails";
 import FoodAndBeverage from "../payment/FoodAndBeverage";
 import PurchaseSummary from "../payment/PurchaseSummary";
 

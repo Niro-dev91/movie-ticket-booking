@@ -12,7 +12,7 @@ import Location from './location/Location';
 import LocationDetail from './location/LocationDetail';
 import SeatBooking from './seats/SeatBooking';
 import Reservation from './payment/ReservationSummary';
-import { CartProvider } from './payment/CartContext';
+import { CartProvider } from './context/CartContext';
 import Deal from './deal/Deal';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -64,7 +64,7 @@ function App() {
             }
           />
           <Route
-            path="/payment"
+            path="/payment/:showtimeId"
             element={
               <ProtectedRoute>
                 <CartProvider>

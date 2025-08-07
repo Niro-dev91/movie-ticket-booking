@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useCart } from "../payment/CartContext";
+import { useCart } from "../context/CartContext";
 import axios from "axios";
 
 export default function FoodAndBeverage() {
