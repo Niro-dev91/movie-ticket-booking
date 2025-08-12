@@ -29,6 +29,7 @@ export default function Admin() {
                             <Link to="/admin/showtime" className="block py-2 px-4 rounded hover:bg-indigo-700">Show Time</Link>
                             <Link to="/admin/pricing " className="block py-2 px-4 rounded hover:bg-indigo-700">Pricing</Link>
                             <Link to="/admin/seats " className="block py-2 px-4 rounded hover:bg-indigo-700">Seats</Link>
+                            <Link to="/admin/cafe " className="block py-2 px-4 rounded hover:bg-indigo-700">Food & Beverages</Link>
                             <Link to="/admin/bookings" className="block py-2 px-4 rounded hover:bg-indigo-700">Booking</Link>
                             <Link to="/admin/settings" className="block py-2 px-4 rounded hover:bg-indigo-700">Setting</Link>
                         </nav>
