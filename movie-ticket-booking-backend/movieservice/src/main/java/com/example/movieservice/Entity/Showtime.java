@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
@@ -31,6 +32,7 @@ public class Showtime {
     @OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TicketPrice> ticketPrice;
 
+    @Column(name = "show_date")
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
