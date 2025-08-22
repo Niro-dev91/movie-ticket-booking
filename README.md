@@ -18,7 +18,9 @@ User Authentication and Authorization ( Role Based Access Control & JWT etc.).
 
 Payment integration.
 
-Current Tech Stack : React js, Javascript, TailwindCSS, Swiper.js, Java, Spring Boot, Spring JPA, Spring Scheduler, Hibernate, Spring Security, JWT, Rest API
+Temporary seat reservation and caching with Redis for faster seat locking and availability tracking.
+
+Current Tech Stack : React js, Javascript, TailwindCSS, Swiper.js, Java, Spring Boot, Spring JPA, Spring Scheduler, Hibernate, Oracle, Spring Security, JWT, Redis, Rest API
 
 ## Credits
 This project was created by **Niroshima Pothupitiya**.
