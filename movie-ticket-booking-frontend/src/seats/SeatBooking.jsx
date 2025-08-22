@@ -7,16 +7,42 @@ import { useParams } from "react-router-dom";
 
 const SeatBooking = ({ data }) => {
   const { showtimeId } = useParams();
+  const navigate = useNavigate();
+
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
+  const [tempReservedSeats, setTempReservedSeats] = useState([]);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    setAdults(0);
+    setChildren(0);
+  }, [selectedSeats]);
 
-  const goToBooking = () => {
-    navigate(`/booking/${showtimeId}`);
+  // Fetch temp reserved seats periodically
+  useEffect(() => {
+    const fetchTempReservedSeats = () => {
+      fetch(`http://localhost:8080/api/seats/temp-reserved/${showtimeId}`)
+        .then(res => res.json())
+        .then(data => setTempReservedSeats(data))
+        .catch(err => console.error(err));
+    };
+
+    fetchTempReservedSeats();
+    const interval = setInterval(fetchTempReservedSeats, 5000);
+    return () => clearInterval(interval);
+  }, [showtimeId]);
+
+  const toggleSeat = (mapId) => {
+    if (tempReservedSeats.includes(mapId)) return;
+    setSelectedSeats(prev =>
+      prev.includes(mapId) ? prev.filter(s => s !== mapId) : [...prev, mapId]
+    );
   };
-  const goToReservation = () => {
+
+  const goToBooking = () => navigate(`/booking/${showtimeId}`);
+
+  const goToReservation = async () => {
     if (adults + children !== selectedSeats.length) {
       alert("Passengers and selected seats must match.");
       return;
@@ -40,25 +66,41 @@ const SeatBooking = ({ data }) => {
       });
     }
 
-    navigate(`/payment/${showtimeId}`, {
-      state: {
-        showtimeId,
-        selectedSeats,
-        selectedTickets,
-      },
-    });
-  };
+    try {
+      const res = await fetch("http://localhost:8080/api/seats/reserve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // send session cookie
+        body: JSON.stringify({
+          showtimeId,
+          seats: selectedSeats,
+        }),
+      });
 
-  const toggleSeat = (mapId) => {
-    setSelectedSeats((prev) =>
-      prev.includes(mapId) ? prev.filter((s) => s !== mapId) : [...prev, mapId]
-    );
-  };
+      if (!res.ok) throw new Error("Reservation failed");
+      const result = await res.json();
 
-  useEffect(() => {
-    setAdults(0);
-    setChildren(0);
-  }, [selectedSeats]);
+      if (result.success) {
+        navigate(`/payment/${showtimeId}`, {
+          state: {
+            showtimeId,
+            selectedSeats,
+            selectedTickets,
+          },
+        });
+      } else {
+        const takenSeats = result.takenSeats || []; 
+        if (takenSeats.length > 0) {
+          alert(`Sorry! The following seats are already reserved: ${takenSeats.join(", ")}`);
+        } else {
+          alert("Sorry! Some of the seats you selected are no longer available. Please choose again.");
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error reserving seats.");
+    }
+  };
 
   const goToSummary = () => {
     if (adults + children !== selectedSeats.length) {
@@ -104,8 +146,9 @@ const SeatBooking = ({ data }) => {
                   }
                   if (status === "seat") {
                     const isSelected = selectedSeats.includes(mapId);
+                    const isTempReserved = tempReservedSeats.includes(mapId);
 
-                    let baseColorClass = "bg-gray-200 hover:bg-gray-500 text-black"; // Normal
+                    let baseColorClass = "bg-gray-200 hover:bg-gray-500 text-black";// Normal
                     switch (seatType) {
                       case "VIP":
                         baseColorClass = "bg-yellow-200 hover:bg-yellow-500 text-black";
@@ -123,16 +166,17 @@ const SeatBooking = ({ data }) => {
 
                     const seatClass = isSelected
                       ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : baseColorClass;
+                      : isTempReserved
+                        ? "bg-red-500 cursor-not-allowed text-white"
+                        : baseColorClass;
 
                     return (
                       <button
                         key={id}
                         className={`w-8 h-8 text-xs rounded cursor-pointer ${seatClass}`}
-                        type="button"
-                        onClick={() => seatType !== "Unavailable" && toggleSeat(mapId)}
-                        title={`${mapId} (${seatType})`}
-                        disabled={seatType === "Unavailable"}
+                        onClick={() => status === "seat" && seatType !== "Unavailable" && !isTempReserved && toggleSeat(mapId)}
+                        title={`${mapId} (${seatType}${isTempReserved ? " - Temp Reserved" : ""})`}
+                        disabled={seatType === "Unavailable" || isTempReserved}
                       >
                         {mapId}
                       </button>
