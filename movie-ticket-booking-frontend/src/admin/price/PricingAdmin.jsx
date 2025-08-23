@@ -49,11 +49,12 @@ export default function PricingAdmin() {
       // Prepare data - send showtime id and pricing  and seat category id for each showtime
       const validData = pricingData
         .filter(item =>
-          item.showtimeId && item.seatCategoryId && item.price && Number(item.price) > 0
+          item.showtimeId && item.seatCategoryId && item.ticketCategoryId && item.price && Number(item.price) > 0
         )
         .map(item => ({
           showtimeId: item.showtimeId,
           seatCategoryId: item.seatCategoryId,
+          ticketCategoryId: item.ticketCategoryId,
           price: Number(item.price)
         }));
 

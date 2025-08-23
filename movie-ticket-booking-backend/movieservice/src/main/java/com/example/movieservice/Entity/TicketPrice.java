@@ -20,6 +20,10 @@ public class TicketPrice {
     @JoinColumn(name = "seatcategory_id")
     private SeatCategory seatCategory;
 
+    @ManyToOne
+    @JoinColumn(name = "ticketcategory_id")
+    private TicketCategory ticketCategory;
+
     public Long getId() {
         return id;
     }
@@ -46,5 +50,13 @@ public class TicketPrice {
 
     public void setSeatCategory(SeatCategory seatCategory) {
         this.seatCategory = seatCategory;
+    }
+
+    public TicketCategory getTicketCategory() {
+        return this.ticketCategory;
+    }
+
+    public void setTicketCategory(TicketCategory ticketCategory) {
+        this.ticketCategory = ticketCategory;
     }
 }

@@ -23,7 +23,6 @@ public class SeatCategoryService {
         addIfNotExists("Normal");
         addIfNotExists("VIP");
         addIfNotExists("Couple");
-        addIfNotExists("Child");
     }
 
     public void addIfNotExists(String name) {
