@@ -9,7 +9,6 @@ import com.example.movieservice.DTO.TicketPriceDTO;
 import com.example.movieservice.Service.TicketPriceService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/ticketprice")
 public class TicketPriceController {
 

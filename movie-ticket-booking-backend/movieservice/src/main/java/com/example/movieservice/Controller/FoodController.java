@@ -10,7 +10,6 @@ import com.example.movieservice.Service.FoodService;
 
 @RestController
 @RequestMapping("/api/food-items")
-@CrossOrigin(origins = "*")
 public class FoodController {
 
     private final FoodService foodService;
