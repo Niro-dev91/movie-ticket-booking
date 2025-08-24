@@ -9,12 +9,32 @@ export const CartProvider = ({ children }) => {
     setCartItems((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
+        // increment by selected qty
         return prev.map((i) =>
-          i.id === item.id ? { ...i, qty: i.qty + 1 } : i
+          i.id === item.id ? { ...i, qty: i.qty + item.qty } : i
         );
       }
-      return [...prev, { ...item, qty: 1 }];
+      return [...prev, { ...item, qty: item.qty }]; // use passed qty
     });
+  };
+
+
+  const decreaseQty = (id) => {
+    setCartItems((prev) =>
+      prev
+        .map((i) =>
+          i.id === id ? { ...i, qty: i.qty - 1 } : i
+        )
+        .filter((i) => i.qty > 0) // remove if qty hits 0
+    );
+  };
+
+  const setQty = (id, qty) => {
+    setCartItems((prev) =>
+      qty > 0
+        ? prev.map((i) => (i.id === id ? { ...i, qty } : i))
+        : prev.filter((i) => i.id !== id)
+    );
   };
 
   const removeFromCart = (id) => {
@@ -22,7 +42,9 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
+    <CartContext.Provider
+      value={{ cartItems, addToCart, decreaseQty, setQty, removeFromCart }}
+    >
       {children}
     </CartContext.Provider>
   );
