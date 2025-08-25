@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.movieservice.DTO.MovieDTO;
 import com.example.movieservice.DTO.MovieDetailDTO;
 import com.example.movieservice.Entity.Movie;
+import com.example.movieservice.Repository.MovieRepository;
 import com.example.movieservice.Service.GenreService;
 import com.example.movieservice.Service.MovieService;
 import com.example.movieservice.Service.TrailerService;
@@ -36,11 +37,14 @@ public class MovieController {
     private final GenreService genreService;
     private final TrailerService trailerService;
     private final MovieService movieService;
+    private final MovieRepository movieRepository;
 
-    public MovieController(GenreService genreService, TrailerService trailerService, MovieService movieService) {
+    public MovieController(GenreService genreService, TrailerService trailerService, MovieService movieService,
+            MovieRepository movieRepository) {
         this.genreService = genreService;
         this.trailerService = trailerService;
         this.movieService = movieService;
+        this.movieRepository = movieRepository;
     }
 
     // Search TMDB movies endpoint
@@ -185,4 +189,20 @@ public class MovieController {
     public String getMovie(@PathVariable String id) {
         return movieService.getMovieDetails(id);
     }
+
+    @GetMapping("/moviedetails/{id}")
+    public ResponseEntity<?> getMovieDetail(@PathVariable String id) {
+        Long movieId = Long.parseLong(id); // Convert String to Long
+        var movie = movieRepository.findById(movieId);
+
+        if (movie.isPresent()) {
+            System.out.println("Movie Details: " + movie.get()); // Console output
+            return ResponseEntity.ok(movie.get());
+        } else {
+            System.out.println("Movie not found for ID: " + movieId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Movie not found");
+        }
+    }
+
 }

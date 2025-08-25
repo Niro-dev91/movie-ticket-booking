@@ -8,7 +8,6 @@ import com.example.movieservice.Service.SeatCategoryService;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/seatcategory")
 public class SeatCategoryController {
 

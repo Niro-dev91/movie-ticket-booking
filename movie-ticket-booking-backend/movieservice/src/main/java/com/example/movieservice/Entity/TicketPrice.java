@@ -1,12 +1,6 @@
 package com.example.movieservice.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "ticketprice")
@@ -26,6 +20,14 @@ public class TicketPrice {
     @JoinColumn(name = "seatcategory_id")
     private SeatCategory seatCategory;
 
+    @ManyToOne
+    @JoinColumn(name = "ticketcategory_id")
+    private TicketCategory ticketCategory;
+
+    public Long getId() {
+        return id;
+    }
+
     public Double getTicketPrice() {
         return this.ticketPrice;
     }
@@ -34,12 +36,27 @@ public class TicketPrice {
         this.ticketPrice = ticketPrice;
     }
 
+    public Showtime getShowtime() {
+        return this.showtime;
+    }
+
     public void setShowtime(Showtime showtime) {
         this.showtime = showtime;
+    }
+
+    public SeatCategory getSeatCategory() {
+        return this.seatCategory;
     }
 
     public void setSeatCategory(SeatCategory seatCategory) {
         this.seatCategory = seatCategory;
     }
 
+    public TicketCategory getTicketCategory() {
+        return this.ticketCategory;
+    }
+
+    public void setTicketCategory(TicketCategory ticketCategory) {
+        this.ticketCategory = ticketCategory;
+    }
 }
