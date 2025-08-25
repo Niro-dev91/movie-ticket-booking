@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { FaMapMarkerAlt, FaCalendarAlt, FaClock } from "react-icons/fa";
+//import { FaMapMarkerAlt, FaCalendarAlt, FaClock } from "react-icons/fa";
+import {
+    Film,
+    MapPin,
+    Calendar1,
+    Clock,
+} from 'lucide-react';
 
 export default function MovieDetails() {
     const { showtimeId } = useParams();
@@ -55,23 +61,28 @@ export default function MovieDetails() {
 
             {/* Text content on right */}
             <div>
-                <h2 className="text-2xl font-semibold">{details.title}</h2>
-
+                <div className="text-gray-800 font-bold text-lg flex items-center gap-2 mb-1">
+                    <Film size={18} /> {details.title}
+                </div>
                 <div className="text-gray-600 flex flex-col gap-2 mt-2 text-sm">
                     <span className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-red-500" /> {details.locationName}
+                        <MapPin size={18} /> {details.locationName}
                     </span>
                     <span className="flex items-center gap-2">
-                        <FaCalendarAlt className="text-blue-500" /> {details.date}
+                        <Calendar1 size={18} /> {details.date}
                     </span>
                     <span className="flex items-center gap-2">
                         <span>
-                            <FaClock className="text-yellow-400" />
+                            <Clock size={18} />
                         </span>
                         <span className="flex items-center gap-2 bg-black text-white px-3 py-1 rounded w-fit">
-                            {details.startTime}</span>
+                            {new Date(`${details.date}T${details.startTime}`).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true,
+                            }).toUpperCase()}
+                        </span>
                     </span>
-
                 </div>
             </div>
         </div>
