@@ -80,10 +80,11 @@ public class ShowtimeService {
                 dto.setMovieId(showtime.getMovie().getId());
                 dto.setLocationId(showtime.getLocation().getId());
                 dto.setDate(showtime.getDate().toString());
-                dto.setStartTime(showtime.getStartTime() != null ? showtime.getEndTime().toString() : null);
+                dto.setStartTime(showtime.getStartTime() != null ? showtime.getStartTime().toString() : null);
                 dto.setEndTime(showtime.getEndTime() != null ? showtime.getEndTime().toString() : null);
                 dto.setLocationName(showtime.getLocation().getLocationName());
                 dto.setTitle(showtime.getMovie().getTitle());
+                
 
                 return dto;
         }
