@@ -92,7 +92,7 @@ export default function FoodMenu() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6">Menu Management</h2>
+      <h2 className="text-2xl font-bold mb-6">Food Menu Management</h2>
 
       {/* Category Dropdown */}
       <div className="mb-6">
