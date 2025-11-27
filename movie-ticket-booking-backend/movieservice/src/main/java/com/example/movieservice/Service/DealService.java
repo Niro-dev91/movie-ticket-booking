@@ -1,5 +1,6 @@
 package com.example.movieservice.Service;
 
+import com.example.movieservice.DTO.DealDTO;
 import com.example.movieservice.Entity.*;
 import com.example.movieservice.Repository.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,5 +72,52 @@ public class DealService {
         }
 
         return savedDeal;
+    }
+
+    public List<DealDTO> getAllDeals() {
+        return dealRepo.findAll().stream().map(deal -> {
+            List<String> terms = deal.getTerms() != null
+                    ? deal.getTerms().stream().map(t -> t.getTerm()).toList()
+                    : List.of();
+
+            return new DealDTO(
+                    deal.getDealId(),
+                    deal.getTitle(),
+                    deal.getDescription(),
+                    buildBannerUrl(deal.getBannerUrl()),
+                    deal.getValue(),
+                    deal.getActive(),
+                    deal.getValidFrom(),
+                    deal.getValidTo(),
+                    terms);
+        }).collect(Collectors.toList());
+    }
+
+    public DealDTO getDealById(String dealId) {
+        return dealRepo.findById(dealId)
+                .map(deal -> {
+                    List<String> terms = deal.getTerms() != null
+                            ? deal.getTerms().stream().map(t -> t.getTerm()).toList()
+                            : List.of();
+
+                    return new DealDTO(
+                            deal.getDealId(),
+                            deal.getTitle(),
+                            deal.getDescription(),
+                            buildBannerUrl(deal.getBannerUrl()),
+                            deal.getValue(),
+                            deal.getActive(),
+                            deal.getValidFrom(),
+                            deal.getValidTo(),
+                            terms);
+                })
+                .orElseThrow(() -> new RuntimeException("Deal not found with id: " + dealId));
+    }
+
+    private String buildBannerUrl(String path) {
+        if (path == null) {
+            return null;
+        }
+        return "http://localhost:8080" + path;
     }
 }

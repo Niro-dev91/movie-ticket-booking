@@ -2,6 +2,7 @@ package com.example.movieservice.Controller;
 
 import com.example.movieservice.Entity.*;
 import com.example.movieservice.Service.*;
+import com.example.movieservice.DTO.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,17 @@ public class DealController {
     public ResponseEntity<String> initTypes() {
         dealTypeService.initializeTypes();
         return ResponseEntity.ok("Deal types initialized");
+    }
+
+    @GetMapping("/all")
+    public List<DealDTO> getAllDeals() {
+        return dealService.getAllDeals();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DealDTO> getDealById(@PathVariable String id) {
+        DealDTO deal = dealService.getDealById(id);
+        return ResponseEntity.ok(deal);
     }
 
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
