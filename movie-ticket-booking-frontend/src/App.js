@@ -14,6 +14,7 @@ import SeatBooking from './seats/SeatBooking';
 import Reservation from './payment/ReservationSummary';
 import { CartProvider } from './context/CartContext';
 import Deal from './deal/Deal';
+import DealDetails from './deal/DealDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 
 //Admin pages
@@ -23,6 +24,7 @@ import AddLocation from "./admin/location/AddLocation";
 import PricingAdmin from './admin/price/PricingAdmin';
 import SeatAdmin from './admin/seats/SeatAdmin';
 import CafeAdmin from './admin/cafe/FoodMenu';
+import DealAdmin from './admin/deals/DealsAdmin';
 
 /* ProtectedRoute logic
 function ProtectedRoute({ children }) {
@@ -46,6 +48,7 @@ function App() {
           <Route path="/deal" element={<Deal />} />
           <Route path="/movies/:movieId" element={<ViewMore />} />
           <Route path="/location/LocationDetail/:locationLink" element={<LocationDetail />} />
+          <Route path="/deals/:id" element={<DealDetails />} />
           {/* Protected */}
           <Route
             path="/booking"
@@ -88,6 +91,7 @@ function App() {
             <Route path="pricing" element={<PricingAdmin />} />
             <Route path="seats" element={<SeatAdmin />} />
             <Route path="cafe" element={<CafeAdmin />} />
+            <Route path="deals" element={<DealAdmin />} />
           </Route>
         </Routes>
       </Router>

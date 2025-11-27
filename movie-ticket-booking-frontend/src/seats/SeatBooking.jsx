@@ -30,9 +30,26 @@ const SeatBooking = ({ data }) => {
   useEffect(() => {
     const fetchTempReservedSeats = () => {
       fetch(`http://localhost:8080/api/seats/temp-reserved/${showtimeId}`)
-        .then(res => res.json())
-        .then(data => setTempReservedSeats(data))
-        .catch(err => console.error(err));
+        .then(res => {
+          if (!res.ok) {
+            console.error("Failed to fetch temp reserved seats", res.status);
+            return [];
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (Array.isArray(data)) {
+            setTempReservedSeats(data);
+          } else if (data && Array.isArray(data.reservedSeats)) {
+            setTempReservedSeats(data.reservedSeats);
+          } else {
+            setTempReservedSeats([]);
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching temp reserved seats:", err);
+          setTempReservedSeats([]);
+        });
     };
 
     fetchTempReservedSeats();
