@@ -14,6 +14,7 @@ import SeatBooking from './seats/SeatBooking';
 import Reservation from './payment/ReservationSummary';
 import { CartProvider } from './context/CartContext';
 import Deal from './deal/Deal';
+import DealDetails from './deal/DealDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 
 //Admin pages
@@ -47,6 +48,7 @@ function App() {
           <Route path="/deal" element={<Deal />} />
           <Route path="/movies/:movieId" element={<ViewMore />} />
           <Route path="/location/LocationDetail/:locationLink" element={<LocationDetail />} />
+          <Route path="/deals/:id" element={<DealDetails />} />
           {/* Protected */}
           <Route
             path="/booking"
