@@ -14,14 +14,19 @@ export default function PurchaseSummary() {
     email: "",
   });
 
+  const [paymentMode, setPaymentMode] = useState("");
+  const [errors, setErrors] = useState({});
+
   const ticketCost = selectedTickets.reduce(
     (sum, ticket) => sum + ticket.price * ticket.count,
     0
   );
+
   const foodCost = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
     0
   );
+
   const total = ticketCost + foodCost;
 
   const handleInputChange = (e) => {
@@ -29,12 +34,49 @@ export default function PurchaseSummary() {
     setCustomer((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!customer.name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+
+    if (!customer.contact.trim()) {
+      newErrors.contact = "Contact number is required";
+    } else if (!/^[0-9]{10}$/.test(customer.contact)) {
+      newErrors.contact = "Contact number must be 10 digits";
+    }
+
+    if (!customer.email.trim()) {
+      newErrors.email = "Email address is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(customer.email)) {
+      newErrors.email = "Invalid email address";
+    }
+
+    if (!paymentMode) {
+      newErrors.paymentMode = "Please select a payment method";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleProceed = () => {
+    if (!validateForm()) return;
+
+    console.log("Customer:", customer);
+    console.log("Payment Mode:", paymentMode);
+    console.log("Total:", total);
+
+    alert("Payment processing...");
+  };
+
   return (
     <div className="bg-gray-50 p-6 rounded shadow max-w-md mx-auto">
       <h3 className="text-xl font-semibold mb-4">PURCHASE SUMMARY</h3>
 
+      {/* Tickets */}
       <div className="space-y-2 text-sm">
-        {/* Tickets */}
         {selectedTickets.length > 0 ? (
           selectedTickets.map((ticket) => (
             <div className="flex justify-between" key={ticket.id}>
@@ -50,17 +92,14 @@ export default function PurchaseSummary() {
           <p className="text-gray-500">No tickets selected</p>
         )}
 
-        {/* Food & Beverages */}
+        {/* Food */}
         {cartItems.length > 0 && (
           <>
             <div className="font-semibold text-gray-700 mt-4">
               Food & Beverages Added
             </div>
             {cartItems.map((item) => (
-              <div
-                className="flex justify-between items-center"
-                key={item.id}
-              >
+              <div className="flex justify-between items-center" key={item.id}>
                 <span>
                   {item.name} (x {item.qty})
                 </span>
@@ -69,7 +108,7 @@ export default function PurchaseSummary() {
                     LKR {(item.price * item.qty).toLocaleString("en-LK")}
                   </span>
                   <button
-                    className="text-red-500 font-bold hover:text-red-700"
+                    className="text-red-500 font-bold"
                     onClick={() => removeFromCart(item.id)}
                   >
                     ✕
@@ -97,44 +136,58 @@ export default function PurchaseSummary() {
       </div>
 
       {/* Payment Method */}
-      <PaymentModeSelector />
+      <PaymentModeSelector
+        paymentMode={paymentMode}
+        setPaymentMode={setPaymentMode}
+      />
+      {errors.paymentMode && (
+        <p className="text-red-500 text-sm mt-1">{errors.paymentMode}</p>
+      )}
 
       {/* Customer Details */}
       <div className="mt-6">
         <h4 className="text-xl font-semibold mb-4">Your Details</h4>
+
         <input
           type="text"
           name="name"
           placeholder="Full Name"
           value={customer.name}
           onChange={handleInputChange}
-          className="w-full p-2 border rounded mb-2"
+          className="w-full p-2 border rounded mb-1"
         />
+        {errors.name && (
+          <p className="text-red-500 text-sm mb-2">{errors.name}</p>
+        )}
+
         <input
           type="text"
           name="contact"
           placeholder="Contact Number"
           value={customer.contact}
           onChange={handleInputChange}
-          className="w-full p-2 border rounded mb-2"
+          className="w-full p-2 border rounded mb-1"
         />
+        {errors.contact && (
+          <p className="text-red-500 text-sm mb-2">{errors.contact}</p>
+        )}
+
         <input
           type="email"
           name="email"
           placeholder="Email Address"
           value={customer.email}
           onChange={handleInputChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded mb-1"
         />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email}</p>
+        )}
       </div>
 
       <button
         className="mt-6 w-full bg-blue-600 text-white p-3 rounded font-semibold hover:bg-blue-700"
-        onClick={() => {
-          console.log("Customer Details:", customer);
-          console.log("Total Amount:", total);
-          alert("Payment processing...");
-        }}
+        onClick={handleProceed}
       >
         Proceed to Payment
       </button>

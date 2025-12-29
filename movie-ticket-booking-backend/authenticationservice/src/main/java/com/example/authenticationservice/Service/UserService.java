@@ -7,7 +7,6 @@ import jakarta.annotation.PostConstruct;
 import com.example.authenticationservice.DTO.RegisterRequest;
 import com.example.authenticationservice.Entity.User;
 
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +38,8 @@ public class UserService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.getEmail());
+        user.setContactNumber(request.getContactNumber());
         user.getRoles().add("ROLE_USER");
         userRepository.save(user);
         return true;
