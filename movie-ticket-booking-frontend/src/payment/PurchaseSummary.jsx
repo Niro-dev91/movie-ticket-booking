@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { PaymentModeSelector } from "../payment/PaymentModeSelector";
+import { useAuth } from "../context/AuthContext";
 
 export default function PurchaseSummary() {
   const location = useLocation();
   const { selectedTickets = [] } = location.state || {};
   const { cartItems, removeFromCart } = useCart();
+  const { user } = useAuth(); // logged-in user
 
   const [customer, setCustomer] = useState({
     name: "",
@@ -16,6 +18,17 @@ export default function PurchaseSummary() {
 
   const [paymentMode, setPaymentMode] = useState("");
   const [errors, setErrors] = useState({});
+
+  // Auto-load user details
+  useEffect(() => {
+    if (user) {
+      setCustomer({
+        name: user.username || "",
+        contact: user.contactNumber || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
 
   const ticketCost = selectedTickets.reduce(
     (sum, ticket) => sum + ticket.price * ticket.count,
@@ -36,26 +49,16 @@ export default function PurchaseSummary() {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!customer.name.trim()) {
-      newErrors.name = "Full name is required";
-    }
-
-    if (!customer.contact.trim()) {
-      newErrors.contact = "Contact number is required";
-    } else if (!/^[0-9]{10}$/.test(customer.contact)) {
+    if (!customer.name.trim()) newErrors.name = "Full name is required";
+    if (!customer.contact.trim()) newErrors.contact = "Contact number is required";
+    else if (!/^[0-9]{10}$/.test(customer.contact))
       newErrors.contact = "Contact number must be 10 digits";
-    }
 
-    if (!customer.email.trim()) {
-      newErrors.email = "Email address is required";
-    } else if (!/^\S+@\S+\.\S+$/.test(customer.email)) {
+    if (!customer.email.trim()) newErrors.email = "Email address is required";
+    else if (!/^\S+@\S+\.\S+$/.test(customer.email))
       newErrors.email = "Invalid email address";
-    }
 
-    if (!paymentMode) {
-      newErrors.paymentMode = "Please select a payment method";
-    }
+    if (!paymentMode) newErrors.paymentMode = "Please select a payment method";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -69,6 +72,7 @@ export default function PurchaseSummary() {
     console.log("Total:", total);
 
     alert("Payment processing...");
+    
   };
 
   return (
@@ -136,13 +140,8 @@ export default function PurchaseSummary() {
       </div>
 
       {/* Payment Method */}
-      <PaymentModeSelector
-        paymentMode={paymentMode}
-        setPaymentMode={setPaymentMode}
-      />
-      {errors.paymentMode && (
-        <p className="text-red-500 text-sm mt-1">{errors.paymentMode}</p>
-      )}
+      <PaymentModeSelector paymentMode={paymentMode} setPaymentMode={setPaymentMode} />
+      {errors.paymentMode && <p className="text-red-500 text-sm mt-1">{errors.paymentMode}</p>}
 
       {/* Customer Details */}
       <div className="mt-6">
@@ -156,9 +155,7 @@ export default function PurchaseSummary() {
           onChange={handleInputChange}
           className="w-full p-2 border rounded mb-1"
         />
-        {errors.name && (
-          <p className="text-red-500 text-sm mb-2">{errors.name}</p>
-        )}
+        {errors.name && <p className="text-red-500 text-sm mb-2">{errors.name}</p>}
 
         <input
           type="text"
@@ -168,9 +165,7 @@ export default function PurchaseSummary() {
           onChange={handleInputChange}
           className="w-full p-2 border rounded mb-1"
         />
-        {errors.contact && (
-          <p className="text-red-500 text-sm mb-2">{errors.contact}</p>
-        )}
+        {errors.contact && <p className="text-red-500 text-sm mb-2">{errors.contact}</p>}
 
         <input
           type="email"
@@ -180,9 +175,7 @@ export default function PurchaseSummary() {
           onChange={handleInputChange}
           className="w-full p-2 border rounded mb-1"
         />
-        {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email}</p>
-        )}
+        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
       </div>
 
       <button

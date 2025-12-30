@@ -34,48 +34,90 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /*
+     * @PostMapping("/login")
+     * public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest
+     * request) {
+     * /*
+     * if ("user".equals(request.getUsername()) &&
+     * "pass".equals(request.getPassword())) { // username & password hard
+     * // coded for now
+     * String token = jwtTokenProvider.generateToken(request.getUsername());
+     * Map<String, String> response = new HashMap<>();
+     * response.put("token", token);
+     * return ResponseEntity.ok(response);
+     * }
+     * // throw new RuntimeException("Invalid credentials");
+     * throw new InvalidCredentialsException("Invalid username or password");
+     */
+    // Find user by username
+    /*
+     * Optional<User> userOptional =
+     * userService.findByUsername(request.getUsername());
+     * 
+     * if (userOptional.isPresent()) {
+     * User user = userOptional.get();
+     * 
+     * // Match encoded password
+     * if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+     * // Generate JWT
+     * String token = jwtTokenProvider.generateToken(user);
+     * Map<String, Object> response = new HashMap<>();
+     * response.put("token", token);
+     * response.put("roles", user.getRoles());
+     * return ResponseEntity.ok(response);
+     * }
+     * }
+     * 
+     * // Invalid credentials
+     * throw new InvalidCredentialsException("Invalid username or password");
+     * }
+     */
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request) {
-        /*
-         * if ("user".equals(request.getUsername()) &&
-         * "pass".equals(request.getPassword())) { // username & password hard
-         * // coded for now
-         * String token = jwtTokenProvider.generateToken(request.getUsername());
-         * Map<String, String> response = new HashMap<>();
-         * response.put("token", token);
-         * return ResponseEntity.ok(response);
-         * }
-         * // throw new RuntimeException("Invalid credentials");
-         * throw new InvalidCredentialsException("Invalid username or password");
-         */
-        // Find user by username
         Optional<User> userOptional = userService.findByUsername(request.getUsername());
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-
-            // Match encoded password
             if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                // Generate JWT
                 String token = jwtTokenProvider.generateToken(user);
                 Map<String, Object> response = new HashMap<>();
                 response.put("token", token);
-                response.put("roles", user.getRoles());
+                response.put("user", user); // include user info
                 return ResponseEntity.ok(response);
             }
         }
 
-        // Invalid credentials
         throw new InvalidCredentialsException("Invalid username or password");
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest request) {
         boolean success = userService.register(request);
         if (!success) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Username or email already exists"));
         }
-        return ResponseEntity.ok("Registration successful");
+
+        // Fetch the newly created user
+        Optional<User> userOptional = userService.findByUsername(request.getUsername());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "User creation failed"));
+        }
+
+        User user = userOptional.get();
+
+        // Generate JWT
+        String token = jwtTokenProvider.generateToken(user);
+
+        // Return token + user info
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("user", user);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/booking")

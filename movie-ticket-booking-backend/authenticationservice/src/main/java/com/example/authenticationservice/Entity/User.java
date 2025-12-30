@@ -3,8 +3,6 @@ package com.example.authenticationservice.Entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -27,7 +25,6 @@ public class User {
     private String email;
 
     @Column(name = "contact_number", nullable = true)
-    @JsonProperty("contact")
     private String contactNumber;
 
     @ElementCollection(fetch = FetchType.EAGER)

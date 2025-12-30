@@ -8,7 +8,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [contact, setContact] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function Register() {
     e.preventDefault();
 
     // Basic frontend validation
-    if (!email || !contact) {
+    if (!email || !contactNumber) {
       alert("Email and contact number are required");
       return;
     }
@@ -27,7 +27,7 @@ export default function Register() {
       return;
     }
 
-    if (!/^[0-9]{10}$/.test(contact)) {
+    if (!/^[0-9]{10}$/.test(contactNumber)) {
       alert("Contact number must be 10 digits");
       return;
     }
@@ -37,7 +37,7 @@ export default function Register() {
         username,
         password,
         email,
-        contact,
+        contactNumber,
       });
 
       // Auto-login if backend returns token
@@ -95,8 +95,8 @@ export default function Register() {
               <input
                 type="text"
                 placeholder="Contact Number"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
+                value={contactNumber}
+                onChange={(e) => setContactNumber(e.target.value)}
                 className="w-full px-4 py-2 bg-white/20 text-white placeholder-white rounded-md border border-white/30 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 required
               />
