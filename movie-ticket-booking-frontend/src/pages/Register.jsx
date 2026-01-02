@@ -41,9 +41,9 @@ export default function Register() {
       });
 
       // Auto-login if backend returns token
-      if (response.data.token) {
-        login(response.data.token);
-        navigate("/home");
+      if (response.data.token && response.data.user) {
+        login(response.data.token, response.data.user);
+        navigate("/");
       } else {
         alert("Registration successful! Please log in.");
         navigate("/login");

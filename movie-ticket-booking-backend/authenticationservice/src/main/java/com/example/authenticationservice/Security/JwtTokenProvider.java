@@ -39,6 +39,8 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("roles", user.getRoles())
+                .claim("email", user.getEmail()) // add email
+                .claim("contactNumber", user.getContactNumber()) // add contact number
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(secretKey, SignatureAlgorithm.HS256) // use secretKey here
