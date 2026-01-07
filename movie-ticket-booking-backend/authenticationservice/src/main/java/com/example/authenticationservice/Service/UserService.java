@@ -1,39 +1,34 @@
 package com.example.authenticationservice.Service;
 
-import com.example.authenticationservice.Repository.UserRepository;
-
-import jakarta.annotation.PostConstruct;
-
 import com.example.authenticationservice.DTO.RegisterRequest;
 import com.example.authenticationservice.Entity.User;
-
+import com.example.authenticationservice.Repository.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
     public boolean register(RegisterRequest request) {
-        if (userRepository.existsByUsername(request.getUsername()))
-            return false;
+        if (userRepository.existsByUsername(request.getUsername())) return false;
 
         User user = new User();
         user.setUsername(request.getUsername());
@@ -45,10 +40,6 @@ public class UserService {
         return true;
     }
 
-    public boolean checkPassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
-    }
-
     @PostConstruct
     public void initAdminUser() {
         if (!userRepository.existsByUsername("admin")) {
@@ -58,5 +49,19 @@ public class UserService {
             admin.getRoles().add("ROLE_ADMIN");
             userRepository.save(admin);
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        return new org.springframework.security.core.userdetails.User(
+            user.getUsername(),
+            user.getPassword(),
+            user.getRoles().stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList())
+        );
     }
 }

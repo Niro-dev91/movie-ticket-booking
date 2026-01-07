@@ -1,30 +1,37 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode"; // named import
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [roles, setRoles] = useState([]);
-  const [user, setUser] = useState(null); // store user object
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+
     if (savedToken) {
       setToken(savedToken);
       try {
         const decoded = jwtDecode(savedToken);
         setRoles(decoded.roles || []);
-        setUser({
-          username: decoded.username,
-          email: decoded.email,
-          contactNumber: decoded.contactNumber,
-        });
       } catch (err) {
         console.error("Invalid token", err);
       }
     }
+
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (err) {
+        console.error("Invalid user in localStorage", err);
+        localStorage.removeItem("user"); // remove invalid entry
+      }
+    }
+
     setLoading(false);
   }, []);
 
@@ -36,9 +43,9 @@ export function AuthProvider({ children }) {
     setRoles(userObj.roles || []);
   };
 
-
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setToken(null);
     setRoles([]);
     setUser(null);

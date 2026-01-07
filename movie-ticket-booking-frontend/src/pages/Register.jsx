@@ -16,7 +16,6 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic frontend validation
     if (!email || !contactNumber) {
       alert("Email and contact number are required");
       return;
@@ -43,7 +42,7 @@ export default function Register() {
       // Auto-login if backend returns token
       if (response.data.token && response.data.user) {
         login(response.data.token, response.data.user);
-        navigate("/");
+        navigate("/login");
       } else {
         alert("Registration successful! Please log in.");
         navigate("/login");
