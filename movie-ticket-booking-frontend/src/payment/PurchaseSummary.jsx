@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { PaymentModeSelector } from "../payment/PaymentModeSelector";
 import { useAuth } from "../context/AuthContext";
 
 export default function PurchaseSummary() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { selectedTickets = [] } = location.state || {};
   const { cartItems, removeFromCart } = useCart();
   const { user } = useAuth(); // logged-in user
@@ -71,7 +72,16 @@ export default function PurchaseSummary() {
     console.log("Payment Mode:", paymentMode);
     console.log("Total:", total);
 
-    alert("Payment processing...");
+    //alert("Payment processing...");
+     navigate("/payment", {
+      state: {
+        customer,
+        paymentMode,
+        total,
+        selectedTickets,
+        cartItems,
+      },
+    });
     
   };
 
