@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { PaymentModeSelector } from "../payment/PaymentModeSelector";
 import { useAuth } from "../context/AuthContext";
@@ -10,6 +10,7 @@ export default function PurchaseSummary() {
   const { selectedTickets = [] } = location.state || {};
   const { cartItems, removeFromCart } = useCart();
   const { user } = useAuth(); // logged-in user
+  const { showtimeId } = useParams();
 
   const [customer, setCustomer] = useState({
     name: "",
@@ -73,7 +74,7 @@ export default function PurchaseSummary() {
     console.log("Total:", total);
 
     //alert("Payment processing...");
-     navigate("/payment", {
+    navigate(`/payment/${showtimeId}/confirm`, {
       state: {
         customer,
         paymentMode,
@@ -82,7 +83,7 @@ export default function PurchaseSummary() {
         cartItems,
       },
     });
-    
+
   };
 
   return (
