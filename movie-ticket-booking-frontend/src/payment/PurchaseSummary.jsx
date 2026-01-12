@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { PaymentModeSelector } from "../payment/PaymentModeSelector";
@@ -12,16 +13,16 @@ export default function PurchaseSummary() {
   const { user } = useAuth(); // logged-in user
   const { showtimeId } = useParams();
 
+  const [showtime, setShowtime] = useState(null);
   const [customer, setCustomer] = useState({
     name: "",
     contact: "",
     email: "",
   });
-
   const [paymentMode, setPaymentMode] = useState("");
   const [errors, setErrors] = useState({});
 
-  // Auto-load user details
+  /* ------------------Auto-load user details------------------ */
   useEffect(() => {
     if (user) {
       setCustomer({
@@ -32,6 +33,15 @@ export default function PurchaseSummary() {
     }
   }, [user]);
 
+  /* ------------------ Load showtime ------------------ */
+  useEffect(() => {
+    axios
+      .get(`http://localhost:8080/api/showtimes/${showtimeId}`)
+      .then((res) => setShowtime(res.data))
+      .catch((err) => console.error("Failed to load showtime", err));
+  }, [showtimeId]);
+
+  /* ------------------ Calculations ------------------ */
   const ticketCost = selectedTickets.reduce(
     (sum, ticket) => sum + ticket.price * ticket.count,
     0
@@ -51,29 +61,29 @@ export default function PurchaseSummary() {
 
   const validateForm = () => {
     const newErrors = {};
+
     if (!customer.name.trim()) newErrors.name = "Full name is required";
-    if (!customer.contact.trim()) newErrors.contact = "Contact number is required";
+
+    if (!customer.contact.trim())
+      newErrors.contact = "Contact number is required";
     else if (!/^[0-9]{10}$/.test(customer.contact))
       newErrors.contact = "Contact number must be 10 digits";
 
-    if (!customer.email.trim()) newErrors.email = "Email address is required";
+    if (!customer.email.trim())
+      newErrors.email = "Email address is required";
     else if (!/^\S+@\S+\.\S+$/.test(customer.email))
       newErrors.email = "Invalid email address";
 
-    if (!paymentMode) newErrors.paymentMode = "Please select a payment method";
+    if (!paymentMode)
+      newErrors.paymentMode = "Please select a payment method";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleProceed = () => {
-    if (!validateForm()) return;
+    if (!validateForm() || !showtime) return;
 
-    console.log("Customer:", customer);
-    console.log("Payment Mode:", paymentMode);
-    console.log("Total:", total);
-
-    //alert("Payment processing...");
     navigate(`/payment/${showtimeId}/confirm`, {
       state: {
         customer,
@@ -81,10 +91,28 @@ export default function PurchaseSummary() {
         total,
         selectedTickets,
         cartItems,
+
+        movieTitle: showtime.title,
+        features: "DOLBY ATMOS",
+        showDate: new Date(showtime.date).toLocaleDateString("en-US", {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+        }),
+        showTime: new Date(`1970-01-01T${showtime.startTime}`).toLocaleTimeString(
+          "en-US",
+          { hour: "2-digit", minute: "2-digit" }
+        ),
+        cinema: showtime.locationName,
+        hall: "ATMOS",
+        seats: selectedTickets.flatMap((t) => t.seats || []),
       },
     });
-
   };
+
+  if (!showtime) {
+    return <div className="text-center p-10">Loading showtime details...</div>;
+  }
 
   return (
     <div className="bg-gray-50 p-6 rounded shadow max-w-md mx-auto">
@@ -92,20 +120,14 @@ export default function PurchaseSummary() {
 
       {/* Tickets */}
       <div className="space-y-2 text-sm">
-        {selectedTickets.length > 0 ? (
-          selectedTickets.map((ticket) => (
-            <div className="flex justify-between" key={ticket.id}>
-              <span>
-                {ticket.type} (x {ticket.count})
-              </span>
-              <span>
-                LKR {(ticket.price * ticket.count).toLocaleString("en-LK")}
-              </span>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">No tickets selected</p>
-        )}
+        {selectedTickets.map((ticket) => (
+          <div className="flex justify-between" key={ticket.id}>
+            <span>{ticket.type} (x {ticket.count})</span>
+            <span>
+              LKR {(ticket.price * ticket.count).toLocaleString("en-LK")}
+            </span>
+          </div>
+        ))}
 
         {/* Food */}
         {cartItems.length > 0 && (
@@ -114,27 +136,18 @@ export default function PurchaseSummary() {
               Food & Beverages Added
             </div>
             {cartItems.map((item) => (
-              <div className="flex justify-between items-center" key={item.id}>
+              <div className="flex justify-between" key={item.id}>
+                <span>{item.name} (x {item.qty})</span>
                 <span>
-                  {item.name} (x {item.qty})
+                  LKR {(item.price * item.qty).toLocaleString("en-LK")}
                 </span>
-                <div className="flex items-center gap-2">
-                  <span>
-                    LKR {(item.price * item.qty).toLocaleString("en-LK")}
-                  </span>
-                  <button
-                    className="text-red-500 font-bold"
-                    onClick={() => removeFromCart(item.id)}
-                  >
-                    ✕
-                  </button>
-                </div>
               </div>
             ))}
           </>
         )}
 
         <hr className="my-2" />
+
         <div className="flex justify-between font-bold text-lg">
           <span>Total</span>
           <span>LKR {total.toLocaleString("en-LK")}</span>
@@ -151,47 +164,46 @@ export default function PurchaseSummary() {
       </div>
 
       {/* Payment Method */}
-      <PaymentModeSelector paymentMode={paymentMode} setPaymentMode={setPaymentMode} />
-      {errors.paymentMode && <p className="text-red-500 text-sm mt-1">{errors.paymentMode}</p>}
+      <PaymentModeSelector
+        paymentMode={paymentMode}
+        setPaymentMode={setPaymentMode}
+      />
+      {errors.paymentMode && (
+        <p className="text-red-500 text-sm">{errors.paymentMode}</p>
+      )}
 
       {/* Customer Details */}
       <div className="mt-6">
-        <h4 className="text-xl font-semibold mb-4">Your Details</h4>
+        <h4 className="text-lg font-semibold mb-3">Your Details</h4>
 
         <input
-          type="text"
           name="name"
-          placeholder="Full Name"
           value={customer.name}
           onChange={handleInputChange}
-          className="w-full p-2 border rounded mb-1"
+          placeholder="Full Name"
+          className="w-full p-2 border rounded mb-2"
         />
-        {errors.name && <p className="text-red-500 text-sm mb-2">{errors.name}</p>}
 
         <input
-          type="text"
           name="contact"
-          placeholder="Contact Number"
           value={customer.contact}
           onChange={handleInputChange}
-          className="w-full p-2 border rounded mb-1"
+          placeholder="Contact Number"
+          className="w-full p-2 border rounded mb-2"
         />
-        {errors.contact && <p className="text-red-500 text-sm mb-2">{errors.contact}</p>}
 
         <input
-          type="email"
           name="email"
-          placeholder="Email Address"
           value={customer.email}
           onChange={handleInputChange}
-          className="w-full p-2 border rounded mb-1"
+          placeholder="Email Address"
+          className="w-full p-2 border rounded"
         />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
       </div>
 
       <button
-        className="mt-6 w-full bg-blue-600 text-white p-3 rounded font-semibold hover:bg-blue-700"
         onClick={handleProceed}
+        className="mt-6 w-full bg-blue-600 text-white p-3 rounded font-semibold hover:bg-blue-700"
       >
         Proceed to Payment
       </button>

@@ -1,18 +1,11 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function Payment() {
     const { state } = useLocation();
     const navigate = useNavigate();
-
-    const {
-        customer,
-        paymentMode,
-        total,
-        selectedTickets = [],
-        cartItems = [],
-    } = state || {};
+    const { showtimeId } = useParams();
 
     const [card, setCard] = useState({
         number: "",
@@ -22,7 +15,25 @@ export default function Payment() {
         cvv: "",
     });
 
-    if (!state) return null;
+    if (!state) {
+        navigate("/");
+        return null;
+    }
+
+    const {
+        customer,
+        paymentMode,
+        total = 0,
+        selectedTickets = [],
+        cartItems = [],
+        movieTitle,
+        features,
+        showDate,
+        showTime,
+        cinema,
+        hall,
+        seats = [],
+    } = state;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,20 +41,38 @@ export default function Payment() {
     };
 
     const handlePayment = () => {
-        console.log("Payment Data:", { customer, card, total });
+        console.log("Payment Data:", {
+            showtimeId,
+            customer,
+            paymentMode,
+            card,
+            total,
+        });
+
         alert("Payment successful!");
         navigate("/success");
     };
 
+    const ticketTotal = selectedTickets.reduce(
+        (sum, t) => sum + t.price * t.count,
+        0
+    );
+
+    const foodTotal = cartItems.reduce(
+        (sum, i) => sum + i.price * i.qty,
+        0
+    );
+
     return (
         <>
             <Navbar />
+
             <div className="max-w-6xl mx-auto px-4 py-10">
-                <h2 className="text-3xl font-bold mb-6 ml-4 mt-8 text-left uppercase">
+                <h2 className="text-3xl font-bold mb-6 mt-8 uppercase">
                     Payment
                 </h2>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-8 py-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     {/* LEFT – Card Payment */}
                     <div className="lg:col-span-2 bg-gray-50 shadow-md rounded-2xl p-6">
@@ -58,7 +87,7 @@ export default function Payment() {
                                 placeholder="Card Number"
                                 value={card.number}
                                 onChange={handleChange}
-                                className="w-full p-2 border rounded"
+                                className="w-full p-3 border rounded-lg"
                             />
 
                             <div className="grid grid-cols-2 gap-4">
@@ -66,7 +95,7 @@ export default function Payment() {
                                     name="expMonth"
                                     value={card.expMonth}
                                     onChange={handleChange}
-                                    className="w-full p-2 border rounded"
+                                    className="w-full p-3 border rounded-lg"
                                 >
                                     <option value="">Expiry Month</option>
                                     {[...Array(12)].map((_, i) => (
@@ -80,7 +109,7 @@ export default function Payment() {
                                     name="expYear"
                                     value={card.expYear}
                                     onChange={handleChange}
-                                    className="w-full p-2 border rounded"
+                                    className="w-full p-3 border rounded-lg"
                                 >
                                     <option value="">Expiry Year</option>
                                     {[...Array(10)].map((_, i) => (
@@ -97,7 +126,7 @@ export default function Payment() {
                                 placeholder="Cardholder Name"
                                 value={card.name}
                                 onChange={handleChange}
-                                className="w-full p-2 border rounded"
+                                className="w-full p-3 border rounded-lg"
                             />
 
                             <input
@@ -106,21 +135,21 @@ export default function Payment() {
                                 placeholder="CVV"
                                 value={card.cvv}
                                 onChange={handleChange}
-                                className="w-full p-2 border rounded"
+                                className="w-full p-3 border rounded-lg"
                             />
                         </div>
 
-                        <div className="flex justify-between mt-8">
+                        <div className="flex justify-between items-center mt-8">
                             <button
-                                className="text-gray-600 hover:text-black"
                                 onClick={() => navigate(-1)}
+                                className="text-gray-600 hover:text-black"
                             >
                                 ← Back
                             </button>
 
                             <button
                                 onClick={handlePayment}
-                                className="bg-pink-500 text-white px-6 py-2 rounded hover:bg-pink-600"
+                                className="bg-pink-500 text-white px-8 py-3 rounded-lg hover:bg-pink-600"
                             >
                                 Pay LKR {total.toLocaleString("en-LK")}
                             </button>
@@ -128,36 +157,41 @@ export default function Payment() {
                     </div>
 
                     {/* RIGHT – Order Summary */}
-                    <div className="bg-gray-50 shadow-md rounded-2xl p-6 h-fit">
-                        <h3 className="text-xl font-semibold mb-6 border-b pb-2">
-                            Order Summary
-                        </h3>
+                    <div className="bg-white shadow-md rounded-2xl p-6 border h-fit">
 
-                        <div className="space-y-3 text-sm">
-                            {selectedTickets.map((t) => (
-                                <div key={t.id} className="flex justify-between">
-                                    <span>{t.type} (x{t.count})</span>
-                                    <span>
-                                        LKR {(t.price * t.count).toLocaleString("en-LK")}
-                                    </span>
-                                </div>
-                            ))}
+                        <div className="flex justify-between items-start">
+                            <h3 className="text-lg font-bold uppercase">
+                                {movieTitle}
+                            </h3>
+                            <span className="text-sm text-gray-600">
+                                {selectedTickets.reduce((a, b) => a + b.count, 0)} Ticket(s)
+                            </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-2">
+                            {features}, {showDate}, {showTime} <br />
+                            {cinema} <br />
+                            {hall} <br />
+                        </p>
 
-                            {cartItems.map((i) => (
-                                <div key={i.id} className="flex justify-between">
-                                    <span>{i.name} (x{i.qty})</span>
-                                    <span>
-                                        LKR {(i.price * i.qty).toLocaleString("en-LK")}
-                                    </span>
-                                </div>
-                            ))}
+                        <hr className="my-4" />
 
-                            <hr />
-
-                            <div className="flex justify-between font-bold text-lg">
-                                <span>Total</span>
-                                <span>LKR {total.toLocaleString("en-LK")}</span>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span>Tickets</span>
+                                <span>LKR {ticketTotal.toLocaleString("en-LK")}</span>
                             </div>
+
+                            <div className="flex justify-between">
+                                <span>Food & Beverages</span>
+                                <span>LKR {foodTotal.toLocaleString("en-LK")}</span>
+                            </div>
+                            <p className="note">Bank Charges & VAT Included</p>
+                        </div>                      
+                        <hr className="my-4" />
+
+                        <div className="flex justify-between font-bold">
+                            <span>SUB TOTAL</span>
+                            <span>LKR {total.toLocaleString("en-LK")}</span>
                         </div>
                     </div>
 
