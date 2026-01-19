@@ -11,8 +11,8 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        // Connect to local Redis on default port 6379
-        return new LettuceConnectionFactory("localhost", 6379);
+        // Connect to local Redis on default port 63790
+        return new LettuceConnectionFactory("localhost", 63790);
     }
 
     @Bean

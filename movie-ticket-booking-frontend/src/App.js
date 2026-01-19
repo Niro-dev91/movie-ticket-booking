@@ -12,6 +12,7 @@ import Location from './location/Location';
 import LocationDetail from './location/LocationDetail';
 import SeatBooking from './seats/SeatBooking';
 import Reservation from './payment/ReservationSummary';
+import Payment from "./payment/Payment";
 import { CartProvider } from './context/CartContext';
 import Deal from './deal/Deal';
 import DealDetails from './deal/DealDetails';
@@ -73,6 +74,14 @@ function App() {
                 <CartProvider>
                   <Reservation />
                 </CartProvider>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment/:showtimeId/confirm"
+            element={
+              <ProtectedRoute>
+                <Payment />
               </ProtectedRoute>
             }
           />
