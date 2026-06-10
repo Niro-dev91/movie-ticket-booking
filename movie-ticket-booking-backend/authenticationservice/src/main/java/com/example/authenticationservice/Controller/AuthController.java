@@ -130,4 +130,5 @@ public class AuthController {
     public String getAdminPage() {
         return "Only admins can see this!";
     }
+
 }
