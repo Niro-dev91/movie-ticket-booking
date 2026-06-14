@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -33,6 +35,8 @@ function ProtectedRoute({ children }) {
   if (loading) return <p>Loading...</p>;
   return token ? children : <Navigate to="/login" replace />;
 }*/
+
+const stripePromise = loadStripe("pk_publish_key");
 
 function App() {
   return (
@@ -81,7 +85,9 @@ function App() {
             path="/payment/:showtimeId/confirm"
             element={
               <ProtectedRoute>
-                <Payment />
+                 <Elements stripe={stripePromise}>
+                 <Payment />
+                 </Elements>
               </ProtectedRoute>
             }
           />
