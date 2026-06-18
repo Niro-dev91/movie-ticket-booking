@@ -214,7 +214,10 @@ export default function Payment() {
                             {cinema} <br />
                             {hall} <br />
                         </p>
-
+                        <div className="text-xs text-gray-600 mt-2">
+                            Selected Seats:{" "}
+                            {seats.length > 0 ? seats.join(", ") : "N/A"}
+                        </div>
                         <hr className="my-4" />
 
                         <div className="space-y-2 text-sm">

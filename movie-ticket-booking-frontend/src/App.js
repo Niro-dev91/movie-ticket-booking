@@ -15,6 +15,7 @@ import LocationDetail from './location/LocationDetail';
 import SeatBooking from './seats/SeatBooking';
 import Reservation from './payment/ReservationSummary';
 import Payment from "./payment/Payment";
+import PaymentSuccess from "./payment/PaymentSuccess";
 import { CartProvider } from './context/CartContext';
 import Deal from './deal/Deal';
 import DealDetails from './deal/DealDetails';
@@ -36,7 +37,7 @@ function ProtectedRoute({ children }) {
   return token ? children : <Navigate to="/login" replace />;
 }*/
 
-const stripePromise = loadStripe("pk_test");
+const stripePromise = loadStripe("pk_test_xxxxxxx");
 
 function App() {
   return (
@@ -88,6 +89,14 @@ function App() {
                  <Elements stripe={stripePromise}>
                  <Payment />
                  </Elements>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/success"
+            element={
+              <ProtectedRoute>
+                <PaymentSuccess />
               </ProtectedRoute>
             }
           />

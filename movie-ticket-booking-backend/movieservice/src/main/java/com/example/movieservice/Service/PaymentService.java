@@ -32,11 +32,7 @@ public class PaymentService {
 
     public PaymentResponseDTO createPaymentIntent(PaymentRequestDTO request) throws Exception {
 
-        String username = SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getName();
-
-        UserDTO user = userClient.getUserByUsername(username);
+        UserDTO user = userClient.getUserById(request.getUserId());
 
         Stripe.apiKey = stripeSecretKey;
 
