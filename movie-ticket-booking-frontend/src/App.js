@@ -37,7 +37,7 @@ function ProtectedRoute({ children }) {
   return token ? children : <Navigate to="/login" replace />;
 }*/
 
-const stripePromise = loadStripe("pk_test_xxxxxxx");
+const stripePromise = loadStripe("");
 
 function App() {
   return (

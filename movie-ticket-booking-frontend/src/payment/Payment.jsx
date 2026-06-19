@@ -20,8 +20,6 @@ export default function Payment() {
     }
 
     const {
-        customer,
-        paymentMode,
         total = 0,
         selectedTickets = [],
         cartItems = [],
@@ -61,6 +59,11 @@ export default function Payment() {
                 return;
             }
 
+            if (!seats || seats.length === 0) {
+                setError("No seats selected. Please go back and select seats.");
+                return;
+            }
+
             const response = await fetch(
                 "http://localhost:8080/api/payments/create-payment-intent",
                 {
@@ -72,12 +75,14 @@ export default function Payment() {
                         userId: user.id,
                         showtimeId: Number(showtimeId),
                         amount: total,
+                        seats: seats,
                     }),
                 }
             );
 
             if (!response.ok) {
-                throw new Error("Failed to create payment.");
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to create payment.");
             }
 
             const data = await response.json();
@@ -109,13 +114,16 @@ export default function Payment() {
                     }
                 );
 
-                alert("Payment successful!");
-
                 navigate("/success", {
                     state: {
                         paymentIntentId: result.paymentIntent.id,
                         showtimeId,
                         movieTitle,
+                        features,
+                        showDate,
+                        showTime,
+                        cinema,
+                        hall,
                         total,
                         selectedTickets,
                         cartItems,
@@ -140,8 +148,6 @@ export default function Payment() {
                 </h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                    {/* LEFT – Card Payment */}
                     <div className="lg:col-span-2 bg-gray-50 shadow-md rounded-2xl p-6">
                         <h3 className="text-xl font-semibold mb-6 border-b pb-2">
                             Card Payment
@@ -173,7 +179,6 @@ export default function Payment() {
                                     {error}
                                 </p>
                             )}
-
                         </div>
 
                         <div className="flex justify-between items-center mt-8">
@@ -197,13 +202,12 @@ export default function Payment() {
                         </div>
                     </div>
 
-                    {/* RIGHT – Order Summary */}
                     <div className="bg-white shadow-md rounded-2xl p-6 border h-fit">
-
                         <div className="flex justify-between items-start">
                             <h3 className="text-lg font-bold uppercase">
                                 {movieTitle}
                             </h3>
+
                             <span className="text-sm text-gray-600">
                                 {selectedTickets.reduce((a, b) => a + b.count, 0)} Ticket(s)
                             </span>
@@ -212,12 +216,14 @@ export default function Payment() {
                         <p className="text-xs text-gray-600 mt-2">
                             {features}, {showDate}, {showTime} <br />
                             {cinema} <br />
-                            {hall} <br />
+                            {hall}
                         </p>
+
                         <div className="text-xs text-gray-600 mt-2">
                             Selected Seats:{" "}
                             {seats.length > 0 ? seats.join(", ") : "N/A"}
                         </div>
+
                         <hr className="my-4" />
 
                         <div className="space-y-2 text-sm">
@@ -243,7 +249,6 @@ export default function Payment() {
                             <span>LKR {total.toLocaleString("en-LK")}</span>
                         </div>
                     </div>
-
                 </div>
             </div>
         </>

@@ -23,7 +23,8 @@ public class PaymentController {
     }
 
     @PostMapping("/success/{paymentIntentId}")
-    public String paymentSuccess(@PathVariable String paymentIntentId) {
+    public String paymentSuccess(@PathVariable String paymentIntentId)
+            throws Exception {
         paymentService.markPaymentSuccess(paymentIntentId);
         return "Payment saved successfully";
     }

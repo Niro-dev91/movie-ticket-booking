@@ -12,11 +12,22 @@ const SeatBooking = ({ data }) => {
   const [children, setChildren] = useState(0);
   const [tempReservedSeats, setTempReservedSeats] = useState([]);
   const [ticketPrices, setTicketPrices] = useState([]);
+  const [bookedSeats, setBookedSeats] = useState([]);
 
   useEffect(() => {
     setAdults(0);
     setChildren(0);
   }, [selectedSeats]);
+
+  useEffect(() => {
+  fetch(`http://localhost:8080/api/booked/seats/${showtimeId}`)
+    .then((res) => res.json())
+    .then((data) => setBookedSeats(Array.isArray(data) ? data : []))
+    .catch((err) => {
+      console.error("Error fetching booked seats:", err);
+      setBookedSeats([]);
+    });
+  }, [showtimeId]);
 
   // Fetch prices for this showtime
   useEffect(() => {
@@ -75,7 +86,7 @@ const SeatBooking = ({ data }) => {
 
 
   const toggleSeat = (mapId) => {
-    if (tempReservedSeats.includes(mapId)) return;
+    if (tempReservedSeats.includes(mapId) || bookedSeats.includes(mapId)) return;
 
     const allSeatsFlat = data.flatMap(row => row.seats);
     const clickedSeat = allSeatsFlat.find(s => s.mapId === mapId);
@@ -98,10 +109,15 @@ const SeatBooking = ({ data }) => {
       // if couple, also add its pair
       if (clickedSeat.seatType === "Couple") {
         const pairId = findCouplePair(mapId, allSeatsFlat);
-        if (pairId && !updated.includes(pairId)) updated.push(pairId);
+        if (
+        pairId &&
+        !updated.includes(pairId) &&
+        !tempReservedSeats.includes(pairId) &&
+        !bookedSeats.includes(pairId)
+
+        ) updated.push(pairId);
       }
     }
-
     setSelectedSeats(updated);
   };
 
@@ -247,6 +263,7 @@ const SeatBooking = ({ data }) => {
                   if (status === "seat") {
                     const isSelected = selectedSeats.includes(mapId);
                     const isTempReserved = tempReservedSeats.includes(mapId);
+                    const isBooked = bookedSeats.includes(mapId);
 
                     let baseColorClass = "bg-gray-200 hover:bg-gray-500 text-black";// Normal
                     switch (seatType) {
@@ -264,19 +281,21 @@ const SeatBooking = ({ data }) => {
                         baseColorClass = "bg-gray-200 hover:bg-gray-500 text-black";
                     }
 
-                    const seatClass = isSelected
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : isTempReserved
-                        ? "bg-red-500 cursor-not-allowed text-white"
-                        : baseColorClass;
+                   const seatClass = isSelected
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : isBooked
+                    ? "bg-black cursor-not-allowed text-white"
+                    : isTempReserved
+                    ? "bg-red-500 cursor-not-allowed text-white"
+                    : baseColorClass;
 
                     return (
                       <button
                         key={id}
                         className={`w-8 h-8 text-xs rounded cursor-pointer ${seatClass}`}
-                        onClick={() => status === "seat" && seatType !== "Unavailable" && !isTempReserved && toggleSeat(mapId)}
+                        onClick={() => status === "seat" && seatType !== "Unavailable" && !isTempReserved && !isBooked && toggleSeat(mapId)}
                         title={`${mapId} (${seatType}${isTempReserved ? " - Temp Reserved" : ""})`}
-                        disabled={seatType === "Unavailable" || isTempReserved}
+                        disabled={seatType === "Unavailable" || isTempReserved || isBooked}
                       >
                         {mapId}
                       </button>
@@ -311,7 +330,8 @@ const SeatBooking = ({ data }) => {
           {/* Legend */}
           <div className="flex gap-4 mb-6 items-center">
             <Legend color="bg-blue-600" label="Selected" />
-            <Legend color="bg-red-500" label="Reserved" />
+            <Legend color="bg-black" label="Booked" />
+            <Legend color="bg-red-500" label="Temporary Reserved" />
             <Legend color="bg-gray-400" label="Normal" />
             <Legend color="bg-yellow-400" label="VIP" />
             <Legend color="bg-pink-400" label="Couple" />
