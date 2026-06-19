@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 export default function PurchaseSummary() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedTickets = [] } = location.state || {};
+  const { selectedTickets = [], selectedSeats = []} = location.state || {};
   const { cartItems, removeFromCart } = useCart();
   const { user } = useAuth(); // logged-in user
   const { showtimeId } = useParams();
@@ -105,7 +105,7 @@ export default function PurchaseSummary() {
         ),
         cinema: showtime.locationName,
         hall: "ATMOS",
-        seats: selectedTickets.flatMap((t) => t.seats || []),
+        seats: selectedSeats,
       },
     });
   };

@@ -19,36 +19,72 @@ public class GenreService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final GenreRepository genreRepository;
 
+    private Map<Integer, String> genreMap = new HashMap<>();
+
     public GenreService(GenreRepository genreRepository) {
         this.genreRepository = genreRepository;
     }
 
-    private Map<Integer, String> genreMap = new HashMap<>();
-
     @PostConstruct
     public void initGenres() {
-        String url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + apiKey + "&language=en-US";
-        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+        try {
+            String url = "https://api.themoviedb.org/3/genre/movie/list?api_key="
+                    + apiKey + "&language=en-US";
 
-        List<Map<String, Object>> genres = (List<Map<String, Object>>) response.getBody().get("genres");
-        for (Map<String, Object> genreData : genres) {
-            Integer id = (Integer) genreData.get("id");
-            String name = (String) genreData.get("name");
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
 
-            genreMap.put(id, name);
+            if (response.getBody() == null || response.getBody().get("genres") == null) {
+                loadGenresFromDatabase();
+                return;
+            }
 
-            // Save or update genre in DB
-            genreRepository.save(new Genre(id, name));
+            List<Map<String, Object>> genres =
+                    (List<Map<String, Object>>) response.getBody().get("genres");
+
+            for (Map<String, Object> genreData : genres) {
+                Integer id = (Integer) genreData.get("id");
+                String name = (String) genreData.get("name");
+
+                genreMap.put(id, name);
+
+                genreRepository.save(new Genre(id, name));
+            }
+
+            System.out.println("Genres loaded from TMDB successfully.");
+
+        } catch (Exception e) {
+            System.out.println("TMDB unavailable. Loading genres from DB instead.");
+            System.out.println("Reason: " + e.getMessage());
+
+            loadGenresFromDatabase();
         }
     }
 
+    private void loadGenresFromDatabase() {
+        List<Genre> genres = genreRepository.findAll();
+
+        for (Genre genre : genres) {
+            genreMap.put(genre.getId(), genre.getName());
+        }
+
+        System.out.println("Genres loaded from database: " + genres.size());
+    }
+
     public List<String> getGenreNames(List<Integer> genreIds) {
+        if (genreIds == null || genreIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         return genreIds.stream()
                 .map(id -> genreMap.getOrDefault(id, "Unknown"))
                 .toList();
     }
 
     public List<Genre> getGenreEntities(List<Integer> genreIds) {
+        if (genreIds == null || genreIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         return genreRepository.findAllById(genreIds);
     }
 }
