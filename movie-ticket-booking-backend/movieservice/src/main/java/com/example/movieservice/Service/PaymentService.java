@@ -1,14 +1,17 @@
 package com.example.movieservice.Service;
 
 import com.example.movieservice.Client.UserClient;
+import com.example.movieservice.DTO.FoodOrderDTO;
 import com.example.movieservice.DTO.PaymentRequestDTO;
 import com.example.movieservice.DTO.PaymentResponseDTO;
 import com.example.movieservice.DTO.UserDTO;
 import com.example.movieservice.Entity.*;
 import com.example.movieservice.Repository.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,18 +31,24 @@ public class PaymentService {
     private final BookingRepository bookingRepository;
     private final BookingSeatRepository bookingSeatRepository;
     private final UserClient userClient;
+    private final BookingFoodRepository bookingFoodRepository;
+    private final FoodItemRepository foodItemRepository;
     private final StringRedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public PaymentService(
             PaymentRepository paymentRepository,
             BookingRepository bookingRepository,
             BookingSeatRepository bookingSeatRepository,
+            BookingFoodRepository bookingFoodRepository,
+            FoodItemRepository foodItemRepository,
             UserClient userClient,
-            StringRedisTemplate redisTemplate
-    ) {
+            StringRedisTemplate redisTemplate) {
         this.paymentRepository = paymentRepository;
         this.bookingRepository = bookingRepository;
         this.bookingSeatRepository = bookingSeatRepository;
+        this.bookingFoodRepository = bookingFoodRepository;
+        this.foodItemRepository = foodItemRepository;
         this.userClient = userClient;
         this.redisTemplate = redisTemplate;
     }
@@ -68,13 +77,12 @@ public class PaymentService {
 
         Stripe.apiKey = stripeSecretKey;
 
-        PaymentIntentCreateParams.Builder paramsBuilder =
-                PaymentIntentCreateParams.builder()
-                        .setAmount(request.getAmount() * 100)
-                        .setCurrency("lkr")
-                        .putMetadata("userId", String.valueOf(user.getId()))
-                        .putMetadata("showtimeId", String.valueOf(request.getShowtimeId()))
-                        .putMetadata("email", user.getEmail());
+        PaymentIntentCreateParams.Builder paramsBuilder = PaymentIntentCreateParams.builder()
+                .setAmount(request.getAmount() * 100)
+                .setCurrency("lkr")
+                .putMetadata("userId", String.valueOf(user.getId()))
+                .putMetadata("showtimeId", String.valueOf(request.getShowtimeId()))
+                .putMetadata("email", user.getEmail());
 
         for (String seatNo : request.getSeats()) {
             paramsBuilder.putMetadata("seat_" + seatNo, seatNo);
@@ -96,12 +104,11 @@ public class PaymentService {
 
         return new PaymentResponseDTO(
                 paymentIntent.getClientSecret(),
-                paymentIntent.getId()
-        );
+                paymentIntent.getId());
     }
 
     @Transactional
-    public void markPaymentSuccess(String paymentIntentId) {
+    public void markPaymentSuccess(String paymentIntentId, List<FoodOrderDTO> foods) {
 
         Payment payment = paymentRepository
                 .findByStripePaymentIntentId(paymentIntentId)
@@ -138,13 +145,41 @@ public class PaymentService {
 
         for (String seatNo : seats) {
             BookingSeat bookingSeat = new BookingSeat();
-            bookingSeat.setBookingId(savedBooking.getId());
+            bookingSeat.setBooking(savedBooking);
             bookingSeat.setShowtimeId(payment.getShowtimeId());
             bookingSeat.setSeatNo(seatNo);
             bookingSeats.add(bookingSeat);
         }
 
         bookingSeatRepository.saveAll(bookingSeats);
+
+        if (foods != null && !foods.isEmpty()) {
+            List<BookingFood> bookingFoods = new ArrayList<>();
+
+            for (FoodOrderDTO foodDto : foods) {
+                if (foodDto.getQuantity() == null || foodDto.getQuantity() <= 0) {
+                    continue;
+                }
+
+                FoodItem foodItem = null;
+
+                if (foodDto.getFoodId() != null) {
+                    foodItem = foodItemRepository.findById(foodDto.getFoodId()).orElse(null);
+                }
+
+                BookingFood bookingFood = new BookingFood();
+                bookingFood.setBooking(savedBooking);
+                bookingFood.setFoodItem(foodItem);
+                bookingFood.setFoodName(foodDto.getFoodName());
+                bookingFood.setQuantity(foodDto.getQuantity());
+                bookingFood.setUnitPrice(foodDto.getPrice());
+                bookingFood.setTotalPrice(foodDto.getPrice() * foodDto.getQuantity());
+
+                bookingFoods.add(bookingFood);
+            }
+
+            bookingFoodRepository.saveAll(bookingFoods);
+        }
 
         for (String seatNo : seats) {
             redisTemplate.delete(redisKey(payment.getShowtimeId(), seatNo));

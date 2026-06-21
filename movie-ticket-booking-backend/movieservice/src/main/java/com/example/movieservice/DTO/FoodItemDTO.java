@@ -1,12 +1,22 @@
 package com.example.movieservice.DTO;
 
 public class FoodItemDTO {
+
+    private Long id;
     private String name;
     private Double price;
     private String description;
     private Long categoryId;
     private String image; // base64 string
     private String categoryName;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

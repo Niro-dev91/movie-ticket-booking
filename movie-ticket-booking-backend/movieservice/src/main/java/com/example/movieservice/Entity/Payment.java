@@ -25,32 +25,83 @@ public class Payment {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Long getId() { return id; }
+    @Lob
+    private String foodsJson;
 
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Long getId() {
+        return id;
+    }
 
-    public Long getShowtimeId() { return showtimeId; }
-    public void setShowtimeId(Long showtimeId) { this.showtimeId = showtimeId; }
+    public Long getUserId() {
+        return userId;
+    }
 
-    public Long getAmount() { return amount; }
-    public void setAmount(Long amount) { this.amount = amount; }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-    public String getCurrency() { return currency; }
-    public void setCurrency(String currency) { this.currency = currency; }
+    public Long getShowtimeId() {
+        return showtimeId;
+    }
 
-    public String getStripePaymentIntentId() { return stripePaymentIntentId; }
+    public void setShowtimeId(Long showtimeId) {
+        this.showtimeId = showtimeId;
+    }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getStripePaymentIntentId() {
+        return stripePaymentIntentId;
+    }
+
     public void setStripePaymentIntentId(String stripePaymentIntentId) {
         this.stripePaymentIntentId = stripePaymentIntentId;
     }
 
-    public PaymentStatus getStatus() { return status; }
-    public void setStatus(PaymentStatus status) { this.status = status; }
+    public PaymentStatus getStatus() {
+        return status;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getFoodsJson() {
+        return foodsJson;
+    }
+
+    public void setFoodsJson(String foodsJson) {
+        this.foodsJson = foodsJson;
+    }
 
 }

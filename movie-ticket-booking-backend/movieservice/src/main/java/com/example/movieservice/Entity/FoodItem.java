@@ -1,5 +1,7 @@
 package com.example.movieservice.Entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +23,9 @@ public class FoodItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private FoodCategory category;
+
+    @OneToMany(mappedBy = "foodItem")
+    private List<BookingFood> bookingFoods;
 
     public FoodItem() {
     }
@@ -71,5 +76,13 @@ public class FoodItem {
 
     public void setCategory(FoodCategory category) {
         this.category = category;
+    }
+
+    public List<BookingFood> getBookingFoods() {
+        return bookingFoods;
+    }
+
+    public void setBookingFoods(List<BookingFood> bookingFoods) {
+        this.bookingFoods = bookingFoods;
     }
 }

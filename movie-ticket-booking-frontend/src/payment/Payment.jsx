@@ -75,14 +75,23 @@ export default function Payment() {
                         userId: user.id,
                         showtimeId: Number(showtimeId),
                         amount: total,
-                        seats: seats,
+                        seats: seats
                     }),
                 }
             );
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || "Failed to create payment.");
+
+                if (errorText.includes("Seat lock expired")) {
+                    throw new Error("SEAT_LOCK_EXPIRED");
+                }
+
+                if (errorText.includes("Seat already booked")) {
+                    throw new Error("SEAT_ALREADY_BOOKED");
+                }
+
+                throw new Error("Payment could not be started. Please try again.");
             }
 
             const data = await response.json();
@@ -107,10 +116,23 @@ export default function Payment() {
             }
 
             if (result.paymentIntent.status === "succeeded") {
+
+                console.log("Cart Items:", cartItems);
                 await fetch(
                     `http://localhost:8080/api/payments/success/${result.paymentIntent.id}`,
                     {
                         method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            foods: cartItems.map((item) => ({
+                                foodId: item.id,
+                                foodName: item.name,
+                                price: item.price,
+                                quantity: item.qty,
+                            })),
+                        }),
                     }
                 );
 
@@ -132,7 +154,19 @@ export default function Payment() {
                 });
             }
         } catch (err) {
-            setError(err.message || "Payment failed.");
+            if (err.message === "SEAT_LOCK_EXPIRED") {
+                alert("Your seat reservation time has expired. Please select your seats again.");
+                navigate(`/booking/${showtimeId}`);
+                return;
+            }
+
+            if (err.message === "SEAT_ALREADY_BOOKED") {
+                alert("One or more selected seats have already been booked. Please choose different seats.");
+                navigate(`/booking/${showtimeId}`);
+                return;
+            }
+
+            setError(err.message || "Payment failed. Please try again.");
         } finally {
             setLoading(false);
         }

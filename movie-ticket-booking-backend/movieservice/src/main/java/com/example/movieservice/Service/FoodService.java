@@ -58,6 +58,7 @@ public class FoodService {
                     }
 
                     FoodItemDTO dto = new FoodItemDTO();
+                    dto.setId(item.getId());
                     dto.setName(item.getName());
                     dto.setPrice(item.getPrice());
                     dto.setDescription(item.getDescription());
