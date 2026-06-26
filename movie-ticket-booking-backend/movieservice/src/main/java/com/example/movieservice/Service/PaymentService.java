@@ -4,6 +4,7 @@ import com.example.movieservice.Client.UserClient;
 import com.example.movieservice.DTO.FoodOrderDTO;
 import com.example.movieservice.DTO.PaymentRequestDTO;
 import com.example.movieservice.DTO.PaymentResponseDTO;
+import com.example.movieservice.DTO.PaymentSuccessResponseDTO;
 import com.example.movieservice.DTO.UserDTO;
 import com.example.movieservice.Entity.*;
 import com.example.movieservice.Repository.*;
@@ -108,7 +109,7 @@ public class PaymentService {
     }
 
     @Transactional
-    public void markPaymentSuccess(String paymentIntentId, List<FoodOrderDTO> foods) {
+    public PaymentSuccessResponseDTO markPaymentSuccess(String paymentIntentId, List<FoodOrderDTO> foods) {
 
         Payment payment = paymentRepository
                 .findByStripePaymentIntentId(paymentIntentId)
@@ -184,6 +185,10 @@ public class PaymentService {
         for (String seatNo : seats) {
             redisTemplate.delete(redisKey(payment.getShowtimeId(), seatNo));
         }
+
+        return new PaymentSuccessResponseDTO(
+        savedBooking.getId(),
+        "Payment saved successfully");
     }
 
     public void markPaymentFailed(String paymentIntentId) {

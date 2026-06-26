@@ -118,7 +118,7 @@ export default function Payment() {
             if (result.paymentIntent.status === "succeeded") {
 
                 console.log("Cart Items:", cartItems);
-                await fetch(
+                const successResponse = await fetch(
                     `http://localhost:8080/api/payments/success/${result.paymentIntent.id}`,
                     {
                         method: "POST",
@@ -126,7 +126,7 @@ export default function Payment() {
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            foods: cartItems.map((item) => ({
+                            foods: cartItems.map(item => ({
                                 foodId: item.id,
                                 foodName: item.name,
                                 price: item.price,
@@ -135,9 +135,10 @@ export default function Payment() {
                         }),
                     }
                 );
-
+                const successData = await successResponse.json();
                 navigate("/success", {
                     state: {
+                        bookingId: successData.bookingId,
                         paymentIntentId: result.paymentIntent.id,
                         showtimeId,
                         movieTitle,
