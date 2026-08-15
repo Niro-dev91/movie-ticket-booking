@@ -20,7 +20,7 @@ Stripe Payment integration.
 
 Temporary seat reservation and caching with Redis for faster seat locking and availability tracking.
 
-Current Tech Stack : React js, Javascript, TailwindCSS, Swiper.js, Java, Spring Boot, Spring JPA, Spring Scheduler, Hibernate, Oracle, Spring Security, JWT, Redis, Rest API
+Current Tech Stack : React js, Javascript, TailwindCSS, Swiper.js, Java, Spring Boot, Spring JPA, Spring Scheduler, Hibernate, Oracle, Spring Security, JWT, Redis, Rest API, Stripe API
 
 ## Credits
 This project was created by **Niroshima Pothupitiya**.
