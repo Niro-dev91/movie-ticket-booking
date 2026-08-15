@@ -16,7 +16,7 @@ Trailer preview and showtime booking.
 
 User Authentication and Authorization ( Role Based Access Control & JWT etc.).
 
-Payment integration.
+Stripe Payment integration.
 
 Temporary seat reservation and caching with Redis for faster seat locking and availability tracking.
 
