@@ -46,10 +46,15 @@ export default function FoodAndBeverage() {
   };
 
   const handleAddToCart = (item) => {
-    const uniqueId = item.id || item.name;
-    const qty = quantities[uniqueId] || 1;
+    const foodId = item.id;
+    const qty = quantities[foodId] || 1;
 
-    addToCart({ ...item, id: uniqueId, qty }); 
+    addToCart({
+      ...item,
+      foodId: foodId,
+      id: foodId,
+      qty,
+    });
   };
 
 
@@ -78,7 +83,7 @@ export default function FoodAndBeverage() {
       <div className="space-y-4">
         {itemsByCategory[activeTab]?.map((item) => (
           <div
-            key={item.id || item.name}  
+            key={item.id || item.name}
             className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b pb-4"
           >
             {/* Image */}
@@ -98,7 +103,7 @@ export default function FoodAndBeverage() {
             <div className="flex items-center gap-2">
               <button
                 className="w-8 h-8 text-lg border rounded flex items-center justify-center"
-                onClick={() => handleQuantityChange(item.id || item.name, -1)}
+                onClick={() => handleQuantityChange(item.id, -1)}
               >
                 −
               </button>
@@ -106,11 +111,11 @@ export default function FoodAndBeverage() {
                 type="text"
                 readOnly
                 className="w-10 text-center border rounded"
-                value={quantities[item.id || item.name] || 1}   
+                value={quantities[item.id] || 1}
               />
               <button
                 className="w-8 h-8 text-lg border rounded flex items-center justify-center"
-                onClick={() => handleQuantityChange(item.id || item.name, 1)}
+                onClick={() => handleQuantityChange(item.id, 1)}
               >
                 +
               </button>

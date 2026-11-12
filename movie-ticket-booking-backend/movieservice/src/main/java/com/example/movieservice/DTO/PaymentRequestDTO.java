@@ -8,6 +8,7 @@ public class PaymentRequestDTO {
     private Long showtimeId;
     private Long amount;
     private List<String> seats;
+    private List<FoodOrderDTO> foods;
 
     public Long getUserId() {
         return userId;
@@ -33,6 +34,19 @@ public class PaymentRequestDTO {
         this.amount = amount;
     }
 
-    public List<String> getSeats() { return seats; }
-    public void setSeats(List<String> seats) { this.seats = seats; }
+    public List<String> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<String> seats) {
+        this.seats = seats;
+    }
+
+    public List<FoodOrderDTO> getFoods() {
+        return foods;
+    }
+
+    public void setFoods(List<FoodOrderDTO> foods) {
+        this.foods = foods;
+    }
 }
